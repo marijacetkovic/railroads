@@ -8,7 +8,7 @@ public class Main {
     public static int N = 3;
     public static int numTrains = 10;
     public static int canvasSize = 800;
-    public static List<List<Integer>> trains = getRandomTrains(numTrains);
+    public static List<int[]> trains = getRandomTrains(numTrains);
     public static void main(String[] args) {
 
         //for each solution calculate values of tiles
@@ -30,28 +30,28 @@ public class Main {
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         while(true){
-            p.performEvaluation();
-            p.performSelection();
-            p.performCrossover();
-            p.performMutation();
-            Population.generation++;
+//            p.performEvaluation();
+//            p.performSelection();
+//            p.performCrossover();
+//            p.performMutation();
+//            Population.generation++;
         }
 
     }
 
-    public static List<List<Integer>> getRandomTrains(int numT){
-        List<List<Integer>> trains = new ArrayList<>();
+    public static List<int[]> getRandomTrains(int numT){
+        List<int[]> trains = new ArrayList<>();
         for (int i = 0; i < numT; i++) {
             trains.add(generateRandomTrain());
         }
         return trains;
     }
 
-    private static List<Integer> generateRandomTrain(){
+    private static int[] generateRandomTrain(){
         Random random = new Random();
-        List<Integer> train = new ArrayList<>();
+        int[] train = new int[4];
         for (int i = 0; i < 4; i++) {
-            train.add(random.nextInt(0,N));
+            train[i]=random.nextInt(0,N);
            // System.out.print(train.get(i)+" ");
         }
        // System.out.println();

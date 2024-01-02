@@ -1,17 +1,21 @@
 import java.util.*;
 
-public class Railroad {
+public class Railroad implements Comparable<Railroad>{
     //represents a chromosome - collection of genes
     int N=Main.N;
-    int score;
+    double score;
     //List<int[][]> world;
     int[][] world;
-    List<List<Integer>> trains;
+    List<int[]> trains;
     // list of solutions??
-    public Railroad(List<List<Integer>> trains){
+    public Railroad(List<int[]> trains){
         this.trains = trains;
         //this.N = N;
         this.world = generateRandomMatrix(N);
+    }
+
+    public void setScore(int x){
+        this.score=x;
     }
 
     public void DFS(int startI, int startJ, int endI, int endJ) {
@@ -79,5 +83,17 @@ public class Railroad {
             }
         }
         return sum;
+    }
+
+    @Override
+    public int compareTo(Railroad o) {
+        return Double.compare(this.score, o.score);
+    }
+
+    public void rateFitness() {
+        for (int i = 0; i < trains.size(); i++) {
+            int[] t = trains.get(i);
+            DFS(t[0],t[1],t[2],t[3]);
+        }
     }
 }

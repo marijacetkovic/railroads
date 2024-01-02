@@ -5,13 +5,18 @@ import java.util.Random;
 
 public class Population {
     static int size=10;
-    public static List<Railroad> solutions = new ArrayList<>(size);
+    public static List<Railroad> solutions = new ArrayList<>();
+    public static List<Railroad> nextGen = new ArrayList<>();
     public static int generation=0;
-
+    public double preserveBound;
+    public double parentBound;
+    public List<Railroad> parents = new ArrayList<>();
+    public double preserveRate;
+    public double mutationRate;
+    boolean[] selected;
     public Population(){
         initializeSolutions();
         //System.out.println("im here"+ solutions.size());
-
     }
 
     public void initializeSolutions(){
@@ -21,17 +26,25 @@ public class Population {
     }
 
     public void performCrossover(){
-        System.out.println("performing crossover");
-        for (int i = 0; i < solutions.size()-2; i++) {
-            singlePointCrossover(i,i+1);
+        System.out.println("performing crossover"); // over selected parents
+        Random r = new Random();
+        int p1 = r.nextInt(parents.size()-1);
+        int p2 =  r.nextInt(parents.size()-1);
+        for (int i = 0; i < parents.size()-2; i++) {
+            while(selected[p1]||selected[p2]||p1==p2){
+                p1 = r.nextInt(parents.size()-1);
+                p2 = r.nextInt(parents.size()-1);
+            }
+            selected[p1] = true;
+            selected[p2] = true;
+            singlePointCrossover(p1,p2);
             for (int j = 0; j < 3; j++) {
                 for (int k = 0; k < 3; k++) {
-                    System.out.print(solutions.get(i).world[j][k]+ " ");
+                    System.out.print(parents.get(i).world[j][k]+ " ");
                 }
                 System.out.println();
             }
 
-            i++;
 
         }
     }
@@ -61,16 +74,35 @@ public class Population {
     public void performEvaluation() {
         //evaluate all solutions
         //first evaluation can be numTrainsThatFinish/numTrains
+        for (int i = 0; i < solutions.size(); i++) {
+            solutions.get(i).rateFitness();
+        }
     }
 
     public void performSelection() {
-        //select the best
         //keep the best
         //middle can undergo crossover
         //worst can be mutated to have some randomness
+        int c = 0;
+        int pc = (int) ((int) size*preserveRate);
+        for (int i = 0; i < solutions.size(); i++) {
+            if(solutions.get(i).score>preserveBound&&c<pc){
+                c++;
+                nextGen.add(solutions.get(i));
+                //selected[i]=true; //dont want to crossover these
+            }
+            else if(solutions.get(i).score>parentBound){
+                parents.add(solutions.get(i));
+            }
+        }
+        selected=new boolean[parents.size()];
+        Arrays.fill(selected,false);
     }
 
     public void performMutation() {
         //produce a random solution
+    }
+    public Railroad getNewIndividual(){
+        return new Railroad(Main.trains);
     }
 }

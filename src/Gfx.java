@@ -1,11 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
-import java.awt.event.ActionEvent;
 
 public class Gfx extends JPanel {
     //public int[][] railroad;
-    public List<List<Integer>> trains;
+    public List<int[]> trains;
     public int pointWidth = 10;
     public int N;
     List<Railroad> solutions = Population.solutions;
@@ -14,7 +13,7 @@ public class Gfx extends JPanel {
     int generation=0;
     int offset = 10;
 
-    public Gfx(List<List<Integer>> trains){
+    public Gfx(List<int[]> trains){
         //this.solutions = solutions;
 
         this.trains = trains;
@@ -69,14 +68,14 @@ public class Gfx extends JPanel {
             generation++;
 
             for (int i = 0; i < trains.size(); i++) {
-                int s1 = (trains.get(i).get(0) * 3 + 1) * circleDiameter + offset / 2 + circleDiameter / 2;
-                int s2 = (trains.get(i).get(1) * 3 + 1) * circleDiameter + offset / 2 + circleDiameter / 2;
+                int s1 = (trains.get(i)[0] * 3 + 1) * circleDiameter + offset / 2 + circleDiameter / 2;
+                int s2 = (trains.get(i)[1] * 3 + 1) * circleDiameter + offset / 2 + circleDiameter / 2;
                 g.setColor(Color.blue);
                 g.fillOval(s2, s1, circleDiameter / 2, circleDiameter / 2);
                 g.setColor(Color.BLACK);
                 g.drawString((i + 1) + "", s2, s1 + circleDiameter / 2);
-                int e1 = (trains.get(i).get(2) * 3 + 1) * circleDiameter + offset / 2 + circleDiameter / 2;
-                int e2 = (trains.get(i).get(3) * 3 + 1) * circleDiameter + offset / 2 + circleDiameter / 2;
+                int e1 = (trains.get(i)[2] * 3 + 1) * circleDiameter + offset / 2 + circleDiameter / 2;
+                int e2 = (trains.get(i)[3] * 3 + 1) * circleDiameter + offset / 2 + circleDiameter / 2;
                 g.setColor(Color.green);
                 //g.drawOval(e2,e1,circleDiameter/10,circleDiameter/2);
                 g.fillOval(e2, e1, circleDiameter / 2, circleDiameter / 2);
