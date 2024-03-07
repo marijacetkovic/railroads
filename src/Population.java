@@ -13,6 +13,11 @@ public class Population {
     public List<Railroad> parents = new ArrayList<>();
     public double preserveRate;
     public double mutationRate;
+    final static int ELITISM_K = 5;
+//    final static int SIZE = 200 + ELITISM_K;  // population size
+//    final static int MAX_ITER = 2000;             // max number of iterations
+//    final static double MUTATION_RATE = 0.05;     // probability of mutation
+//    final static double CROSSOVER_RATE = 0.7;     // probability of crossover
     boolean[] selected;
     public Population(){
         initializeSolutions();
@@ -79,6 +84,7 @@ public class Population {
         }
     }
 
+    //this gotta be fixed next lalala
     public void performSelection() {
         //keep the best
         //middle can undergo crossover
@@ -86,12 +92,12 @@ public class Population {
         int c = 0;
         int pc = (int) ((int) size*preserveRate);
         for (int i = 0; i < solutions.size(); i++) {
-            if(solutions.get(i).score>preserveBound&&c<pc){
+            if(solutions.get(i).fitness>preserveBound&&c<pc){
                 c++;
                 nextGen.add(solutions.get(i));
                 //selected[i]=true; //dont want to crossover these
             }
-            else if(solutions.get(i).score>parentBound){
+            else if(solutions.get(i).fitness>parentBound){
                 parents.add(solutions.get(i));
             }
         }

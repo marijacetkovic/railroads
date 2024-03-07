@@ -3,10 +3,13 @@ import java.util.*;
 public class Railroad implements Comparable<Railroad>{
     //represents a chromosome - collection of genes
     int N=Main.N;
-    double score;
+    double fitness;
     //List<int[][]> world;
     int[][] world;
     List<int[]> trains;
+    Random random = new Random();
+    private double mutationRate;
+
     // list of solutions??
     public Railroad(List<int[]> trains){
         this.trains = trains;
@@ -14,9 +17,12 @@ public class Railroad implements Comparable<Railroad>{
         this.world = generateRandomMatrix(N);
     }
 
-    public void setScore(int x){
-        this.score=x;
+    public void setFitness(int x){
+        this.fitness=x;
     }
+    public double getFitness(){return this.fitness;}
+
+    //dfs as evaluation helper func
 
     public void DFS(int startI, int startJ, int endI, int endJ) {
         boolean[][] visited = new boolean[N][N];
@@ -34,7 +40,6 @@ public class Railroad implements Comparable<Railroad>{
             System.out.println("not found");
         }
     }
-
     private boolean depthFirstSearch(int i, int j, int endI, int endJ, boolean[][] visited) {
         if (i < 0 || j < 0 || i >= world.length || j >= world[0].length || visited[i][j] || world[i][j] != 1) {
             return false;
@@ -58,9 +63,8 @@ public class Railroad implements Comparable<Railroad>{
         return false;
     }
 
-
+    //generate random railroad instance
     public int[][] generateRandomMatrix(int size) {
-        Random random = new Random();
         int[][] matrix = new int[size][size];
 
         for (int i = 0; i < size; i++) {
@@ -71,6 +75,27 @@ public class Railroad implements Comparable<Railroad>{
             System.out.println();
         }
         return matrix;
+    }
+
+    //get tile
+    public int getTile(int i, int j){
+        return this.world[i][j];
+    }
+    //set tile func
+    public void setTile(int i, int j, int tileKey){
+        this.world[i][j]=tileKey;
+    }
+
+    //mutate one railroad instance according to mutation rate
+    public void mutate(){
+        for (int i = 0; i < world.length; i++) {
+            for (int j = 0; j < world.length; j++) {
+                if(Math.random()<=mutationRate){
+                    int tileKey = random.nextInt(11)+1;
+                    setTile(i,j,tileKey);
+                }
+            }
+        }
     }
 
 
@@ -87,9 +112,10 @@ public class Railroad implements Comparable<Railroad>{
 
     @Override
     public int compareTo(Railroad o) {
-        return Double.compare(this.score, o.score);
+        return Double.compare(this.fitness, o.fitness);
     }
 
+    //fitness evaluation function
     public void rateFitness() {
         for (int i = 0; i < trains.size(); i++) {
             int[] t = trains.get(i);

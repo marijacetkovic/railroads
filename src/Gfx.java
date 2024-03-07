@@ -19,10 +19,6 @@ public class Gfx extends JPanel {
         this.trains = trains;
         this.N = Main.N*3;
         circleDiameter = canvasSize/N;
-//        Timer timer = new Timer(5, (ActionEvent e)->{
-//            repaint();
-//        });
-//        timer.start();
 
     }
 
@@ -44,7 +40,7 @@ public class Gfx extends JPanel {
                     g.drawRect(x, y, circleDiameter, circleDiameter);
 
                     // dimensions
-                    int innerDiameter = (int) (circleDiameter * 0.95); // Adjust the inner rectangle size as needed
+                    int innerDiameter = (int) (circleDiameter * 0.95);
                     int innerX = x + (circleDiameter - innerDiameter) / 2;
                     int innerY = y + (circleDiameter - innerDiameter) / 2;
 
@@ -85,11 +81,6 @@ public class Gfx extends JPanel {
             }
             repaint();
             revalidate();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
 
         }
 //        repaint();

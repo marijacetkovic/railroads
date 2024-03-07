@@ -5,6 +5,7 @@ import java.util.Random;
 
 public class Main {
     public static TileDictionary dict = new TileDictionary();
+    public static int numOfGenerations = 10;
     public static int N = 3;
     public static int numTrains = 10;
     public static int canvasSize = 800;
@@ -28,15 +29,13 @@ public class Main {
         frame.add(gui);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        while(true){
+        while(Population.generation<numOfGenerations){
 //            p.performEvaluation();
 //            p.performSelection();
 //            p.performCrossover();
 //            p.performMutation();
-//            Population.generation++;
+              Population.generation++;
         }
-
     }
 
     public static List<int[]> getRandomTrains(int numT){
