@@ -5,11 +5,12 @@ import java.util.Random;
 
 public class Main {
     public static TileDictionary dict = new TileDictionary();
-    public static int numOfGenerations = 10;
+    final static int NUM_GENERATIONS = 10;
     public static int N = 3;
-    public static int numTrains = 10;
+    final static int NUM_TRAINS = 10;
     public static int canvasSize = 800;
-    public static List<int[]> trains = getRandomTrains(numTrains);
+    public static List<int[]> trains = getRandomTrains(NUM_TRAINS);
+    static Random r = new Random();
     public static void main(String[] args) {
 
         //for each solution calculate values of tiles
@@ -31,7 +32,7 @@ public class Main {
         frame.add(gui);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        while(Population.generation<numOfGenerations){
+        while(Population.generation<NUM_GENERATIONS){
 //            p.performEvaluation();
 //            p.performSelection();
 //            p.performCrossover();
@@ -43,9 +44,12 @@ public class Main {
                 index++;
             }
             while(index<p.solutions.size()){
-                Railroad r1 = p.select();
-                Railroad r2 = p.select();
+                Railroad r1 = p.select(Population.ROULETTE_WHEEL_SELECTION);
+                Railroad r2 = p.select(Population.ROULETTE_WHEEL_SELECTION);
                 //crossover
+                if(r.nextDouble()<Population.CROSSOVER_RATE){
+                    p.crossover(Population.SINGLE_POINT_CROSSOVER,r1,r2);
+                }
 
                 //mutate
 

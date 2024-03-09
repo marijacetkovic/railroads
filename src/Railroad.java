@@ -9,6 +9,7 @@ public class Railroad implements Comparable<Railroad>{
     List<int[]> trains;
     Random random = new Random();
     private double mutationRate;
+    boolean selected = false;
 
     // list of solutions??
     public Railroad(List<int[]> trains){
@@ -86,14 +87,12 @@ public class Railroad implements Comparable<Railroad>{
         this.world[i][j]=tileKey;
     }
 
-    //mutate one railroad instance according to mutation rate
-    public void mutate(){
+    //mutate one railroad instance by switching a random tile
+    public void insertionMutation(){
         for (int i = 0; i < world.length; i++) {
             for (int j = 0; j < world.length; j++) {
-                if(Math.random()<=mutationRate){
                     int tileKey = random.nextInt(11)+1;
                     setTile(i,j,tileKey);
-                }
             }
         }
     }
