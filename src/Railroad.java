@@ -116,10 +116,12 @@ public class Railroad implements Comparable<Railroad>{
     }
 
     //fitness evaluation function
-    public void rateFitness() {
+    public double rateFitness() {
         for (int i = 0; i < trains.size(); i++) {
             int[] t = trains.get(i);
             DFS(t[0],t[1],t[2],t[3]);
         }
+
+        return 1;
     }
 }

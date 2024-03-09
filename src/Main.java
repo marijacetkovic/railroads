@@ -15,6 +15,8 @@ public class Main {
         //for each solution calculate values of tiles
         // + # of the trains unable to finish which should be 0
         Population p = new Population();
+        List<Railroad>  newP = new ArrayList<>();
+
 //        Railroad w = new Railroad(trains);
 //        for (int i = 0; i < 10; i++) {
 //            for (int j = 0; j <10; j++) {
@@ -34,6 +36,23 @@ public class Main {
 //            p.performSelection();
 //            p.performCrossover();
 //            p.performMutation();
+            int index=0;
+            //choose the elite
+            for (int i = 0; i < Population.ELITISM_K; i++) {
+                newP.set(index,p.getBestSolution());
+                index++;
+            }
+            while(index<p.solutions.size()){
+                Railroad r1 = p.select();
+                Railroad r2 = p.select();
+                //crossover
+
+                //mutate
+
+                //add to new pop
+            }
+              Railroad r = p.getBestSolution(); //solution to represent per generation
+              p.performEvaluation();
               Population.generation++;
         }
     }
