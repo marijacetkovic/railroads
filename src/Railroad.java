@@ -7,7 +7,7 @@ public class Railroad implements Comparable<Railroad>{
     //List<int[][]> world;
     int[][] world;
     List<int[]> trains;
-    Random random = new Random();
+    Random random = new Random(4);
     private double mutationRate;
     boolean selected = false;
 
@@ -25,31 +25,33 @@ public class Railroad implements Comparable<Railroad>{
 
     //dfs as evaluation helper func
 
-    public void DFS(int startI, int startJ, int endI, int endJ) {
+    public double DFS(int startI, int startJ, int endI, int endJ) {
         boolean[][] visited = new boolean[N][N];
-        Arrays.fill(visited, false);
-
-        if (world[startI][startJ] != 1) {
-            throw new RuntimeException("Invalid train start position.");
+        for (int i = 0; i < visited.length; i++) {
+            Arrays.fill(visited[i], false);
         }
+//        if (world[startI][startJ] != 1) {
+//            throw new RuntimeException("Invalid train start position.");
+//        }
 
-        boolean found = depthFirstSearch(startI, startJ, endI, endJ, visited);
+        double score = depthFirstSearch(startI, startJ, endI, endJ, visited);
 
-        if (found) {
+        if (score>0) {
             System.out.println("found");
         } else {
-            System.out.println("not found");
+            //System.out.println("not found");
         }
+        return score;
     }
-    private boolean depthFirstSearch(int i, int j, int endI, int endJ, boolean[][] visited) {
+    private double depthFirstSearch(int i, int j, int endI, int endJ, boolean[][] visited) {
         if (i < 0 || j < 0 || i >= world.length || j >= world[0].length || visited[i][j] || world[i][j] != 1) {
-            return false;
+            return 0;
         }
 
         visited[i][j] = true;
 
         if (i == endI && j == endJ) {
-            return true;
+            return 10;
         }
 
         int[][] directions = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
@@ -57,11 +59,11 @@ public class Railroad implements Comparable<Railroad>{
             int newRow = i + dir[0];
             int newCol = j + dir[1];
 
-            if (depthFirstSearch(newRow, newCol, endI, endJ, visited)) {
-                return true;
+            if (depthFirstSearch(newRow, newCol, endI, endJ, visited)==10) {
+                return 10;
             }
         }
-        return false;
+        return 0;
     }
 
     //generate random railroad instance
@@ -118,9 +120,8 @@ public class Railroad implements Comparable<Railroad>{
     public double rateFitness() {
         for (int i = 0; i < trains.size(); i++) {
             int[] t = trains.get(i);
-            DFS(t[0],t[1],t[2],t[3]);
+            this.fitness+=DFS(t[0],t[1],t[2],t[3]);
         }
-
-        return 1;
+        return this.fitness;
     }
 }

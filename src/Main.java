@@ -5,18 +5,20 @@ import java.util.Random;
 
 public class Main {
     public static TileDictionary dict = new TileDictionary();
-    final static int NUM_GENERATIONS = 10;
-    public static int N = 3;
+    final static int NUM_GENERATIONS = 100;
+    public static int N = 5;
     final static int NUM_TRAINS = 10;
     public static int canvasSize = 800;
+    static Random r = new Random(4);
     public static List<int[]> trains = getRandomTrains(NUM_TRAINS);
-    static Random r = new Random();
+    public static Population p = new Population();
+
     public static void main(String[] args) {
 
         //for each solution calculate values of tiles
         // + # of the trains unable to finish which should be 0
-        Population p = new Population();
-        List<Railroad>  newP = new ArrayList<>();
+        p.performEvaluation();
+        List<Railroad> newP = new ArrayList<>(10);
 
 //        Railroad w = new Railroad(trains);
 //        for (int i = 0; i < 10; i++) {
@@ -28,36 +30,50 @@ public class Main {
         //int[][] world = Main.dict.transform(w.world);
         Gfx gui = new Gfx(trains);
         JFrame frame = new JFrame("Railroads");
-        frame.setSize(canvasSize, canvasSize);
+        frame.setSize(canvasSize+200, canvasSize+200);
         frame.add(gui);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        while(Population.generation<NUM_GENERATIONS){
-//            p.performEvaluation();
-//            p.performSelection();
-//            p.performCrossover();
-//            p.performMutation();
+        while(p.CURRENT_GENERATION<NUM_GENERATIONS){
+            gui.repaint();
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             int index=0;
             //choose the elite
-            for (int i = 0; i < Population.ELITISM_K; i++) {
-                newP.set(index,p.getBestSolution());
+            for (int i = 0; i < 3; i++) {
+                newP.add(index,p.getBestSolution());
                 index++;
             }
-            while(index<p.solutions.size()){
+            while(index+1<p.solutions.size()){
                 Railroad r1 = p.select(Population.ROULETTE_WHEEL_SELECTION);
                 Railroad r2 = p.select(Population.ROULETTE_WHEEL_SELECTION);
                 //crossover
                 if(r.nextDouble()<Population.CROSSOVER_RATE){
                     p.crossover(Population.SINGLE_POINT_CROSSOVER,r1,r2);
                 }
-
                 //mutate
-
+                if(r.nextDouble()<Population.MUTATION_RATE){
+                    p.mutate(Population.INSERTION_MUTATION,r1);
+                }
+                if(r.nextDouble()<Population.MUTATION_RATE){
+                    p.mutate(Population.INSERTION_MUTATION,r2);
+                }
                 //add to new pop
+                newP.add(index,r1);
+                index++;
+                //System.out.println(index);
+                newP.add(index,r2);
+                index++;
+                //System.out.println(index);
             }
               Railroad r = p.getBestSolution(); //solution to represent per generation
               p.performEvaluation();
-              Population.generation++;
+              Population.CURRENT_GENERATION++;
+              //System.out.println("current gen "+p.CURRENT_GENERATION);
+
         }
     }
 
@@ -70,10 +86,9 @@ public class Main {
     }
 
     private static int[] generateRandomTrain(){
-        Random random = new Random();
         int[] train = new int[4];
         for (int i = 0; i < 4; i++) {
-            train[i]=random.nextInt(0,N);
+            train[i]=r.nextInt(0,N);
            // System.out.print(train.get(i)+" ");
         }
        // System.out.println();

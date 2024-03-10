@@ -1,10 +1,10 @@
 import java.util.*;
 
 public class Population {
-    final static int POPULATION_SIZE=10;
+    final static int POPULATION_SIZE=150;
     public double totalFitness;
     public static List<Railroad> solutions = new ArrayList<>();
-    public static int generation=0;
+    public static int CURRENT_GENERATION=0;
     public double mutationRate;
     final static int ELITISM_K = 5;
     final static int ROULETTE_WHEEL_SELECTION = 0;
@@ -17,9 +17,9 @@ public class Population {
 
     //    final static int SIZE = 200 + ELITISM_K;  // population size
 //    final static int MAX_ITER = 2000;             // max number of iterations
-//    final static double MUTATION_RATE = 0.05;     // probability of mutation
+    final static double MUTATION_RATE = 0.02;     // probability of mutation
     final static double CROSSOVER_RATE = 0.7;     // probability of crossover
-    Random r = new Random();
+    Random r = new Random(4);
 
     public Population(){
         initializeSolutions();
@@ -61,6 +61,8 @@ public class Population {
         for (int i = 0; i < POPULATION_SIZE; i++) {
             this.totalFitness += solutions.get(i).rateFitness();
         }
+
+        System.out.println("total fitness  "+totalFitness);
     }
 
 
@@ -137,7 +139,7 @@ public class Population {
     //returns a railroad with best fitness
     public Railroad getBestSolution(){
         double bestScore = 0;
-        int index = -1;
+        int index = 0;
         for (int i = 0; i < POPULATION_SIZE; i++) {
             Railroad r = solutions.get(i);
             if(r.fitness>=bestScore&&!r.selected){
