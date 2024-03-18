@@ -27,9 +27,8 @@ public class Gfx extends JPanel {
     protected void paintComponent(Graphics g) {
         repaint();
         revalidate();
-
-        int[][] railroad = Main.dict.transform(p.getBestSolution().world);
-       // System.out.println("generation " + p.CURRENT_GENERATION);
+        Railroad r = p.getBestSolution();
+        // System.out.println("generation " + p.CURRENT_GENERATION);
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 int x = j * circleDiameter + offset;
@@ -44,7 +43,7 @@ public class Gfx extends JPanel {
                 int innerX = x + (circleDiameter - innerDiameter) / 2;
                 int innerY = y + (circleDiameter - innerDiameter) / 2;
 
-                if (railroad[i][j] == 1) {
+                if (r.worldTransformed[i][j] == 1) {
                     g.setColor(Color.decode("#8B0000"));
                     g.fillRect(innerX, innerY, innerDiameter, innerDiameter);
                 } else {

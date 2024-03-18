@@ -6,27 +6,32 @@ public class Railroad implements Comparable<Railroad>{
     double fitness;
     //List<int[][]> world;
     int[][] world;
+    int[][] worldTransformed;
     List<int[]> trains;
-    Random random = new Random(4);
+    Random random = new Random();
     private double mutationRate;
     boolean selected = false;
+    int id;
 
     // list of solutions??
-    public Railroad(List<int[]> trains){
+    public Railroad(List<int[]> trains,int id){
         this.trains = trains;
+        this.id = id;
         //this.N = N;
         this.world = generateRandomMatrix(N);
+        this.worldTransformed = Main.dict.transform(this.world);
     }
 
     public void setFitness(int x){
         this.fitness=x;
     }
+    public void setWorld(int[][] world){this.world=world;}
     public double getFitness(){return this.fitness;}
 
     //dfs as evaluation helper func
 
     public double DFS(int startI, int startJ, int endI, int endJ) {
-        boolean[][] visited = new boolean[N][N];
+        boolean[][] visited = new boolean[3*N][3*N];
         for (int i = 0; i < visited.length; i++) {
             Arrays.fill(visited[i], false);
         }
@@ -34,24 +39,28 @@ public class Railroad implements Comparable<Railroad>{
 //            throw new RuntimeException("Invalid train start position.");
 //        }
 
-        double score = depthFirstSearch(startI, startJ, endI, endJ, visited);
+        boolean found = depthFirstSearch(startI, startJ, endI, endJ, visited);
 
-        if (score>0) {
-            System.out.println("found");
+        if (found) {
+            if (Population.CURRENT_GENERATION==Main.NUM_GENERATIONS-1){
+                //System.out.println("found train with coordinates  " +endI +" "+endJ+"at railroad with id "+id);
+            }
+            return 10;
         } else {
             //System.out.println("not found");
-        }
-        return score;
-    }
-    private double depthFirstSearch(int i, int j, int endI, int endJ, boolean[][] visited) {
-        if (i < 0 || j < 0 || i >= world.length || j >= world[0].length || visited[i][j] || world[i][j] != 1) {
             return 0;
+        }
+
+    }
+    private boolean depthFirstSearch(int i, int j, int endI, int endJ, boolean[][] visited) {
+        if (i < 0 || j < 0 || i >= worldTransformed.length || j >= worldTransformed[0].length || visited[i][j] || worldTransformed[i][j] != 1) {
+            return false;
         }
 
         visited[i][j] = true;
 
         if (i == endI && j == endJ) {
-            return 10;
+            return true;
         }
 
         int[][] directions = { {1, 0}, {-1, 0}, {0, 1}, {0, -1} };
@@ -59,11 +68,11 @@ public class Railroad implements Comparable<Railroad>{
             int newRow = i + dir[0];
             int newCol = j + dir[1];
 
-            if (depthFirstSearch(newRow, newCol, endI, endJ, visited)==10) {
-                return 10;
+            if (depthFirstSearch(newRow, newCol, endI, endJ, visited)==true) {
+                return true;
             }
         }
-        return 0;
+        return false;
     }
 
     //generate random railroad instance
@@ -73,9 +82,9 @@ public class Railroad implements Comparable<Railroad>{
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 matrix[i][j] = random.nextInt(11)+1;
-                System.out.print(matrix[i][j]+ " ");
+                //System.out.print(matrix[i][j]+ " ");
             }
-            System.out.println();
+            //System.out.println();
         }
         return matrix;
     }
@@ -118,9 +127,13 @@ public class Railroad implements Comparable<Railroad>{
 
     //fitness evaluation function
     public double rateFitness() {
+        this.fitness=0;
+        this.selected = false;
         for (int i = 0; i < trains.size(); i++) {
             int[] t = trains.get(i);
-            this.fitness+=DFS(t[0],t[1],t[2],t[3]);
+            //train coordinates are generated wrt tiles encoded by types
+            //to transform them into binary matrix i placed them in the center of the tile, 3*i+1
+            this.fitness+=DFS(3*t[0]+1,3*t[1]+1,3*t[2]+1,3*t[3]+1);
         }
         return this.fitness;
     }

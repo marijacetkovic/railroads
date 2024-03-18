@@ -5,9 +5,9 @@ import java.util.Random;
 
 public class Main {
     public static TileDictionary dict = new TileDictionary();
-    final static int NUM_GENERATIONS = 100;
-    public static int N = 5;
-    final static int NUM_TRAINS = 10;
+    final static int NUM_GENERATIONS =400;
+    public static int N = 15;
+    final static int NUM_TRAINS = 20;
     public static int canvasSize = 800;
     static Random r = new Random(4);
     public static List<int[]> trains = getRandomTrains(NUM_TRAINS);
@@ -28,22 +28,26 @@ public class Main {
 //            System.out.println();
 //        }
         //int[][] world = Main.dict.transform(w.world);
+
+
         Gfx gui = new Gfx(trains);
         JFrame frame = new JFrame("Railroads");
         frame.setSize(canvasSize+200, canvasSize+200);
         frame.add(gui);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+
         while(p.CURRENT_GENERATION<NUM_GENERATIONS){
-            gui.repaint();
+           // gui.repaint();
             try {
-                Thread.sleep(100);
+                Thread.sleep(0);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             int index=0;
             //choose the elite
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < Population.ELITISM_K; i++) {
                 newP.add(index,p.getBestSolution());
                 index++;
             }
@@ -70,7 +74,8 @@ public class Main {
                 //System.out.println(index);
             }
               Railroad r = p.getBestSolution(); //solution to represent per generation
-              p.performEvaluation();
+            System.out.println("best solution id "+r.id+" with fitness "+r.fitness+ "and generation "+p.CURRENT_GENERATION );
+            p.performEvaluation();
               Population.CURRENT_GENERATION++;
               //System.out.println("current gen "+p.CURRENT_GENERATION);
 
@@ -80,6 +85,7 @@ public class Main {
     public static List<int[]> getRandomTrains(int numT){
         List<int[]> trains = new ArrayList<>();
         for (int i = 0; i < numT; i++) {
+            System.out.println("TRAIN "+i);
             trains.add(generateRandomTrain());
         }
         return trains;
@@ -89,9 +95,9 @@ public class Main {
         int[] train = new int[4];
         for (int i = 0; i < 4; i++) {
             train[i]=r.nextInt(0,N);
-           // System.out.print(train.get(i)+" ");
+            System.out.print(train[i]+" ");
         }
-       // System.out.println();
+        System.out.println();
         return train;
     }
 }
