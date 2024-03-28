@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
 
 public class Gfx extends JPanel {
     //public int[][] railroad;
@@ -12,13 +13,14 @@ public class Gfx extends JPanel {
     int circleDiameter;
     int generation = 0;
     int offset = 10;
+    BlockingQueue<Railroad> bestIndividualQueue;
 
-    public Gfx(List<int[]> trains) {
+    public Gfx(List<int[]> trains, BlockingQueue<Railroad> bestIndividualQueue) {
         //this.solutions = solutions;
-
         this.trains = trains;
-        this.N = Main.N * 3;
+        this.N = Config.WORLD_SIZE * 3;
         circleDiameter = canvasSize / N;
+        this.bestIndividualQueue = bestIndividualQueue;
 
     }
 
@@ -27,7 +29,18 @@ public class Gfx extends JPanel {
     protected void paintComponent(Graphics g) {
         repaint();
         revalidate();
-        Railroad r = p.getBestSolution();
+        Railroad r = null;
+
+        //Railroad r = p.getBestSolution();
+        // Display best individual if available
+        try {
+            Thread.sleep(10);
+            r = bestIndividualQueue.take();
+            // Draw or display the best individual data
+            // Example: You can access bestIndividual.id and bestIndividual.fitness
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         // System.out.println("generation " + p.CURRENT_GENERATION);
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
