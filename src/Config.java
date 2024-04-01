@@ -1,10 +1,10 @@
 public class Config {
     public static final int NUM_GENERATIONS = 1100;
     public static final int WORLD_SIZE = 7;
-    public static final int NUM_TRAINS = 20;
+    public static final int NUM_TRAINS = 50;
     public static final int POPULATION_SIZE = 1000;
     public static final double CROSSOVER_RATE = 0.7;
-    public static final double MUTATION_RATE = 0.05;
+    public static final double MUTATION_RATE = 0.15;
     final static int ELITISM_K = (int)(0.05*POPULATION_SIZE);
     public static final int CANVAS_SIZE = 800;
     public static final int RANDOM_SEED = 4;

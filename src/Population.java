@@ -1,10 +1,15 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 public class Population {
     public double totalFitness;
     public double maxFitness;
+    public double avgFitness;
     public static List<Railroad> solutions = new ArrayList<>();
-    public static int CURRENT_GENERATION=0;
+    public static int CURRENT_GENERATION=1;
+    public int POPULATION_SIZE = Config.POPULATION_SIZE;
 
     static int tsIndex = -1;
 
@@ -16,7 +21,7 @@ public class Population {
     }
 
     public void initializeSolutions(){
-        for (int i = 0; i < Config.POPULATION_SIZE; i++) {
+        for (int i = 0; i < POPULATION_SIZE; i++) {
             solutions.add(new Railroad(Main.trains,i)); //train coordinates should be supplied
         }
     }
@@ -35,8 +40,8 @@ public class Population {
     public void singlePointCrossover(Railroad r1, Railroad r2){
         int[][] c1 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
         int[][] c2 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
-       // int crossoverPoint = r.nextInt(.N); // select a random crossover point
-        int crossoverPoint = Config.WORLD_SIZE/2;
+       int crossoverPoint = r.nextInt(Config.WORLD_SIZE); // select a random crossover point
+       // int crossoverPoint = Config.WORLD_SIZE/2;
         //printMatrix(r1.world);
         //printMatrix(r2.world);
         for (int i = 0; i <Config.WORLD_SIZE; i++) {
@@ -61,16 +66,42 @@ public class Population {
 
     public void performEvaluation() {
         //evaluate all solutions
-        //first evaluation can be numTrainsThatFinish/numTrains
         this.totalFitness = 0.0;
         this.maxFitness = Double.MIN_VALUE;
-        for (int i = 0; i < Config.POPULATION_SIZE; i++) {
+        this.avgFitness = 0;
+        for (int i = 0; i < POPULATION_SIZE; i++) {
             double f = solutions.get(i).rateFitness();
             this.totalFitness += f;
             this.maxFitness = Math.max(maxFitness, f);
         }
+        this.avgFitness = totalFitness/POPULATION_SIZE;
+        printPopulationStatistics();
+    }
 
-        System.out.println("total fitness  "+totalFitness+" max fitness  "+maxFitness);
+    public void performEvaluation2(int start, int end) {
+        System.out.println("Thread " + Thread.currentThread() + " evaluating solutions from " + start + " to " + (end - 1));
+        //evaluate all solutions
+        for (int i = start; i < end; i++) {
+            double f = solutions.get(i).rateFitness();
+            updateStatistics(f);
+        }
+    }
+
+    public synchronized void updateStatistics(double f){
+        this.totalFitness += f;
+        //System.out.println(this.totalFitness);
+        this.maxFitness = Math.max(maxFitness, f);
+    }
+
+    public void resetStatistics(){
+        this.totalFitness = 0.0;
+        this.maxFitness = Double.MIN_VALUE;
+        this.avgFitness = 0;
+    }
+
+    public void printPopulationStatistics(){
+        this.avgFitness = totalFitness/POPULATION_SIZE;
+        System.out.println("Total fitness: "+totalFitness+"   |   Max fitness: "+maxFitness+"   |   Avg fitness: "+avgFitness);
     }
 
     public Railroad rouletteWheelSelection(){
@@ -78,8 +109,8 @@ public class Population {
         //the ones w greater fitness are more probable, but might also choose w lower fitness
         //keeps population diverse
         double rand = Math.random() * this.totalFitness; //rnd nr between 0 and total fitness of the population
-        int index =  -1;
-        for (int i = 0; i < Config.POPULATION_SIZE; i++) {
+        int index =  0;
+        for (int i = 0; i < POPULATION_SIZE; i++) {
             rand -= solutions.get(i).getFitness();
             if(rand<0){
                 index = i;
@@ -100,7 +131,7 @@ public class Population {
         Railroad r = null;
 
         while (r==null) {
-            int rand = (int) (Math.random() * Config.POPULATION_SIZE);
+            int rand = (int) (Math.random() * POPULATION_SIZE);
             r = solutions.get(rand);
             if (r.getFitness() >= lowerBound) {
                 return r;
@@ -172,7 +203,7 @@ public class Population {
     public Railroad getBestSolution(){
         double bestScore = -100;
         int index = 0;
-        for (int i = 0; i < Config.POPULATION_SIZE; i++) {
+        for (int i = 0; i < POPULATION_SIZE; i++) {
             Railroad r = solutions.get(i);
             if(r.fitness>bestScore&&!r.selected){
                 bestScore = r.fitness;
@@ -181,7 +212,7 @@ public class Population {
         }
         Railroad selected = solutions.get(index);
         selected.selected=true;
-        System.out.println("best at index "+index+" with fitness "+bestScore);
+        //System.out.println("best at index "+index+" with fitness "+bestScore);
         return selected;
     }
     public void setSolutions(List<Railroad> solutions) {

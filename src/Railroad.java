@@ -82,9 +82,9 @@ public class Railroad implements Comparable<Railroad>{
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 matrix[i][j] = random.nextInt(11)+1;
-                System.out.print(matrix[i][j]+ " ");
+                //System.out.print(matrix[i][j]+ " ");
             }
-            System.out.println();
+            //System.out.println();
         }
         return matrix;
     }
