@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     public static TileDictionary dict = new TileDictionary();
@@ -37,6 +36,8 @@ public class Main {
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         }
+//        new RSequential(p,bestIndividual,bestIndividualQueue).execute();
+
         new RParallel(4,p,bestIndividual,bestIndividualQueue).execute();
     }
 

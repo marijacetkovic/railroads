@@ -8,13 +8,15 @@ public class RParallel {
     private Railroad bestIndividual;
     private BlockingQueue<Railroad> bestIndividualQueue;
     private CyclicBarrier barrier;
+    ConcurrentLinkedQueue<List<Railroad>> results = new ConcurrentLinkedQueue<>();
+
 
     public RParallel(int numThreads, Population population, Railroad bestIndividual, BlockingQueue<Railroad> bestIndividualQueue) {
         this.NUM_THREADS = numThreads;
         this.p = population;
         this.bestIndividual = bestIndividual;
         this.bestIndividualQueue = bestIndividualQueue;
-        this.barrier = new CyclicBarrier(NUM_THREADS);
+        this.barrier = new CyclicBarrier(NUM_THREADS+1);
     }
 
     public void execute(){
@@ -25,18 +27,19 @@ public class RParallel {
             for (int i = 0; i < NUM_THREADS; i++) {
                 int start = i * (p.solutions.size() / NUM_THREADS);
                 int end = Math.min(p.solutions.size(), (i + 1) * (p.solutions.size() / NUM_THREADS));
-
                 tp.submit(new EvaluatorWorker(p, start, end, barrier));
             }
             try {
                 barrier.await();
-                System.out.println("Thread " + Thread.currentThread().getId() + " reached the barrier");
+                System.out.println("Main " + Thread.currentThread().getId() + " reached the barrier");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
             p.printPopulationStatistics();
+
             List<Railroad> newP = new ArrayList<>(10);
             int index=0;
+
             //choose the elite
             for (int i = 0; i < Config.ELITISM_K; i++) {
                 Railroad r = p.getBestSolution();
@@ -44,29 +47,37 @@ public class RParallel {
                 newP.add(r);
                 index++;
             }
-            // p.sortPopulation();
-            while(index<p.solutions.size()){
-                Railroad r1 = p.select(Config.ROULETTE_WHEEL_SELECTION);
-                Railroad r2 = p.select(Config.ROULETTE_WHEEL_SELECTION);
-                //crossover
-                if(Math.random()<Config.CROSSOVER_RATE){
-                    p.crossover(Config.SINGLE_POINT_CROSSOVER,r1,r2);
-                }
-                //mutate
-                if(Math.random()<Config.MUTATION_RATE){
-                    p.mutate(Config.INSERTION_MUTATION,r1);
-                }
-                if(Math.random()<Config.MUTATION_RATE){
-                    p.mutate(Config.INSERTION_MUTATION,r2);
-                }
-                //add to new pop
-                newP.add(r1);
-                //System.out.println(index);
-                newP.add(r2);
-                index+=2;
-                //System.out.println(index);
+            //building the population with leftover p size - elitism places
+            int CAPACITY = p.POPULATION_SIZE - Config.ELITISM_K;
+            System.out.println(CAPACITY+"capacity");
+            results = new ConcurrentLinkedQueue<>();
+            for (int i = 0; i < NUM_THREADS; i++) {
+                int start = i * (CAPACITY / NUM_THREADS);
+                int end = Math.min(CAPACITY, (i + 1) * (CAPACITY / NUM_THREADS));
+                System.out.println("start "+start+" end "+end +" for thread i ");
+                tp.submit(new PBuilderWorker(p, start, end, barrier,results));
             }
+
+            try {
+                barrier.await();
+                System.out.println("Main " + Thread.currentThread().getId() + " reached the barrier2");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            // collect the solutions
+            for(List<Railroad> l:results){
+                newP.addAll(l);
+            }
+            System.out.println(newP.size()+" size of newp");
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
             p.setSolutions(newP);
+
             bestIndividual = p.getBestSolution(); //solution to represent per generation
             bestIndividualQueue.offer(bestIndividual);
             System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and generation "+p.CURRENT_GENERATION );

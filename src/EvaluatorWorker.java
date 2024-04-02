@@ -17,8 +17,8 @@ class EvaluatorWorker implements Runnable {
     public void run() {
         p.performEvaluation2(start, end);
         try {
+            System.out.println("EvaluatorWorker " + Thread.currentThread().getId() + " reached the barrier");
             barrier.await();
-            System.out.println("Thread " + Thread.currentThread().getId() + " reached the barrier");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

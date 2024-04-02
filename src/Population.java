@@ -92,6 +92,7 @@ public class Population {
         //System.out.println(this.totalFitness);
         this.maxFitness = Math.max(maxFitness, f);
     }
+    //collect statistics?????
 
     public void resetStatistics(){
         this.totalFitness = 0.0;
