@@ -42,7 +42,7 @@ public class RParallel {
 
             //choose the elite
             for (int i = 0; i < Config.ELITISM_K; i++) {
-                Railroad r = p.getBestSolution();
+                Railroad r = p.getBestSolutions();
                 // r.selected=false;
                 newP.add(r);
                 index++;
@@ -78,7 +78,7 @@ public class RParallel {
 
             p.setSolutions(newP);
 
-            bestIndividual = p.getBestSolution(); //solution to represent per generation
+            bestIndividual = p.getBestIndividual(); //solution to represent per generation
             bestIndividualQueue.offer(bestIndividual);
             System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and generation "+p.CURRENT_GENERATION );
 

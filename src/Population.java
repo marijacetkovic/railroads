@@ -38,8 +38,8 @@ public class Population {
 
 
     public void singlePointCrossover(Railroad r1, Railroad r2){
-        int[][] c1 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
-        int[][] c2 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
+        int[][] m1 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
+        int[][] m2 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
        int crossoverPoint = r.nextInt(Config.WORLD_SIZE); // select a random crossover point
        // int crossoverPoint = Config.WORLD_SIZE/2;
         //printMatrix(r1.world);
@@ -47,11 +47,11 @@ public class Population {
         for (int i = 0; i <Config.WORLD_SIZE; i++) {
             for (int j = 0; j < Config.WORLD_SIZE; j++) {
                 if (j < crossoverPoint) {
-                    c1[i][j] = r1.world[i][j];
-                    c2[i][j] = r2.world[i][j];
+                    m1[i][j] = r1.world[i][j];
+                    m2[i][j] = r2.world[i][j];
                 } else {
-                    c1[i][j] = r2.world[i][j];
-                    c2[i][j] = r1.world[i][j];
+                    m1[i][j] = r2.world[i][j];
+                    m2[i][j] = r1.world[i][j];
                 }
             }
         }
@@ -59,8 +59,8 @@ public class Population {
         //printMatrix(c2);
 
         //System.out.println("CROSSING OVER individual " + r1.id + " and individual " + r2.id);
-        r1.setWorld(c1);
-        r2.setWorld(c2);
+        r1.setWorld(m1);
+        r2.setWorld(m2);
     }
 
 
@@ -121,7 +121,10 @@ public class Population {
         // index = r.nextInt(POPULATION_SIZE);
 
         //System.out.println("Selected individual at index "+index);
-        return solutions.get(index);
+        Railroad selected = solutions.get(index);
+        Railroad r = new Railroad(selected.trains,-1);
+        r.setWorld(selected.world);
+        return r;
     }
     public Railroad testSelection() {
         // Scale up fitness values to avoid numerical precision issues
@@ -179,6 +182,7 @@ public class Population {
                 break;
             default:
                 System.out.println("invalid crossover type");
+
         }
     }
 
@@ -201,7 +205,7 @@ public class Population {
     }
 
     //returns a railroad with best fitness
-    public Railroad getBestSolution(){
+    public Railroad getBestSolutions(){
         double bestScore = -100;
         int index = 0;
         for (int i = 0; i < POPULATION_SIZE; i++) {
@@ -215,6 +219,21 @@ public class Population {
         selected.selected=true;
         //System.out.println("best at index "+index+" with fitness "+bestScore);
         return selected;
+    }
+
+    public Railroad getBestIndividual(){
+        double bestScore = -100;
+        int index = 0;
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            Railroad r = solutions.get(i);
+            if(r.fitness>bestScore){
+                bestScore = r.fitness;
+                index = i;
+            }
+        }
+        //System.out.println("best at index "+index+" with fitness "+bestScore);
+        Railroad r = solutions.get(index);
+        return r;
     }
     public void setSolutions(List<Railroad> solutions) {
         this.solutions = solutions;

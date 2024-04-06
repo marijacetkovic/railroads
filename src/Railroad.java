@@ -25,7 +25,8 @@ public class Railroad implements Comparable<Railroad>{
     public void setFitness(int x){
         this.fitness=x;
     }
-    public void setWorld(int[][] world){this.world=world;}
+    public void setWorld(int[][] world){this.world=world;
+        this.worldTransformed = Main.dict.transform(this.world);}
     public double getFitness(){return this.fitness;}
 
     //dfs as evaluation helper func
@@ -99,7 +100,7 @@ public class Railroad implements Comparable<Railroad>{
     }
 
     //mutate one railroad instance by switching a random tile
-    public void insertionMutation(){
+    public void insertionMutation2(){
         for (int i = 0; i < world.length; i++) {
             for (int j = 0; j < world.length; j++) {
                     int tileKey = random.nextInt(11)+1;
@@ -108,7 +109,25 @@ public class Railroad implements Comparable<Railroad>{
         }
     }
 
+    public void insertionMutation3(){
+        int i = random.nextInt(N);
+        int j = random.nextInt(N);
+        int tileKey = random.nextInt(11)+1;
+       // System.out.println("randomly flipping tile at "+i+" "+j);
+        setTile(i,j,tileKey);
+    }
 
+
+    public void insertionMutation(){
+        for (int i = 0; i < world.length; i++) {
+            for (int j = 0; j < world.length; j++) {
+                if(Math.random()<Config.MUTATION_RATE) {
+                    int tileKey = random.nextInt(11) + 1;
+                    setTile(i, j, tileKey);
+                }
+            }
+        }
+    }
     //returns sum of all tile costs
     public int getSum(){
         int sum = 0;

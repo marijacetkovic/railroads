@@ -20,7 +20,7 @@ public class RSequential {
             int index=0;
             //choose the elite
             for (int i = 0; i < Config.ELITISM_K; i++) {
-                Railroad r = p.getBestSolution();
+                Railroad r = p.getBestSolutions();
                 // r.selected=false;
                 newP.add(r);
                 index++;
@@ -30,17 +30,26 @@ public class RSequential {
                 Railroad r1 = p.select(Config.ROULETTE_WHEEL_SELECTION);
                 Railroad r2 = p.select(Config.ROULETTE_WHEEL_SELECTION);
                 //crossover
+                Railroad[] children=null;
                 if(Math.random()<Config.CROSSOVER_RATE){
                     p.crossover(Config.SINGLE_POINT_CROSSOVER,r1,r2);
                 }
                 //mutate
-                if(Math.random()<Config.MUTATION_RATE){
-                    p.mutate(Config.INSERTION_MUTATION,r1);
-                }
-                if(Math.random()<Config.MUTATION_RATE){
-                    p.mutate(Config.INSERTION_MUTATION,r2);
-                }
+//                if(Math.random()<Config.MUTATION_RATE){
+//                    p.mutate(Config.INSERTION_MUTATION,r1);
+//                }
+//                if(Math.random()<Config.MUTATION_RATE){
+//                    p.mutate(Config.INSERTION_MUTATION,r2);
+//                }
+
+                p.mutate(Config.INSERTION_MUTATION,r1);
+                p.mutate(Config.INSERTION_MUTATION,r2);
+
                 //add to new pop
+                //if(p.CURRENT_GENERATION == 10){
+//                    newP.add(Main.generateTrivialSol());
+                r1.id=index;
+                r2.id=index;
                 newP.add(r1);
                 //System.out.println(index);
                 newP.add(r2);
@@ -48,7 +57,7 @@ public class RSequential {
                 //System.out.println(index);
             }
             p.setSolutions(newP);
-            bestIndividual = p.getBestSolution(); //solution to represent per generation
+            bestIndividual = p.getBestIndividual(); //solution to represent per generation
             bestIndividualQueue.offer(bestIndividual);
             System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and generation "+p.CURRENT_GENERATION );
 

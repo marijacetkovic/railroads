@@ -11,14 +11,13 @@ public class PBuilderWorker implements Runnable {
     private CyclicBarrier barrier;
     ConcurrentLinkedQueue<List<Railroad>> results;
 
-    public PBuilderWorker(Population p, int start, int end, CyclicBarrier barrier,ConcurrentLinkedQueue<List<Railroad>> results ) {
+    public PBuilderWorker(Population p, int start, int end, CyclicBarrier barrier,ConcurrentLinkedQueue<List<Railroad>> results) {
         this.p = p;
         this.start = start;
         this.end = end;
         this.workerP = new ArrayList<>(1);
         this.barrier = barrier;
         this.results = results;
-
     }
 
     @Override
@@ -46,17 +45,17 @@ public class PBuilderWorker implements Runnable {
             //System.out.println(index);
         }
         try {
-            //results.add(workerP);
-            updateResults(workerP);
+            results.add(workerP);
+            //updateResults(workerP);
             System.out.println("PBuilderWorker " + Thread.currentThread().getId() + " reached the barrier");
             barrier.await();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-    public synchronized void updateResults(List<Railroad> r){
-        results.add(r);
-    }
+//    public synchronized void updateResults(List<Railroad> r){
+//        results.add(r);
+//    }
 
     public List<Railroad> getIntermediateList() {
         return workerP;

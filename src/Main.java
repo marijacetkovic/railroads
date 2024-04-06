@@ -36,9 +36,10 @@ public class Main {
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         }
-//        new RSequential(p,bestIndividual,bestIndividualQueue).execute();
+        new RSequential(p,bestIndividual,bestIndividualQueue).execute();
 
-        new RParallel(4,p,bestIndividual,bestIndividualQueue).execute();
+        //new RParallel(4,p,bestIndividual,bestIndividualQueue).execute();
+       // new RDistributed().execute();
     }
 
     public static Railroad getBestIndividual(){
@@ -62,5 +63,22 @@ public class Main {
         }
         System.out.println();
         return train;
+    }
+
+    public static Railroad generateTrivialSol(){
+            int n = Config.WORLD_SIZE;
+            int[][] matrix = new int[n][n];
+
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
+                    matrix[i][j] = 11;
+                    //System.out.print(matrix[i][j]+ " ");
+                }
+                //System.out.println();
+            }
+
+            Railroad r = new Railroad(trains,-1);
+            r.setWorld(matrix);
+            return r;
     }
 }
