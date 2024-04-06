@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class TileDictionary {
     private HashMap<Integer, int[][]> tileMap;
@@ -80,6 +81,15 @@ public class TileDictionary {
 
     public int[][] getTile(int tileNumber) {
         return tileMap.get(tileNumber);
+    }
+
+    public int getKey(int[][] tile) {
+        for (Map.Entry<Integer, int[][]> e:tileMap.entrySet()) {
+            if(e.getValue()==tile){
+                return e.getKey();
+            }
+        }
+        return 0;
     }
 
     public int[][] transform(int[][] m) {
