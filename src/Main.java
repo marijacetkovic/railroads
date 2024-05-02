@@ -38,7 +38,7 @@ public class Main {
         }
         new RSequential(p,bestIndividual,bestIndividualQueue).execute();
 
-        //new RParallel(4,p,bestIndividual,bestIndividualQueue).execute();
+        //new RParallel(8,p,bestIndividual,bestIndividualQueue).execute();
        // new RDistributed().execute();
     }
 

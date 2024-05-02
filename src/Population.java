@@ -63,16 +63,30 @@ public class Population {
         r2.setWorld(m2);
     }
 
-
     public void performEvaluation() {
         //evaluate all solutions
         this.totalFitness = 0.0;
         this.maxFitness = Double.MIN_VALUE;
         this.avgFitness = 0;
         for (int i = 0; i < POPULATION_SIZE; i++) {
+            //double f = solutions.get(i).rateFitness();
             double f = solutions.get(i).rateFitness();
             this.totalFitness += f;
             this.maxFitness = Math.max(maxFitness, f);
+        }
+        this.avgFitness = totalFitness/POPULATION_SIZE;
+        printPopulationStatistics();
+    }
+    public void performEvaluationM() {
+        //evaluate all solutions
+        this.totalFitness = 0.0;
+        this.maxFitness = Double.MAX_VALUE;
+        this.avgFitness = 0;
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            //double f = solutions.get(i).rateFitness();
+            double f = solutions.get(i).rateFitnessWithPricing();
+            this.totalFitness += f;
+            this.maxFitness = Math.min(maxFitness, f);
         }
         this.avgFitness = totalFitness/POPULATION_SIZE;
         printPopulationStatistics();
@@ -85,6 +99,18 @@ public class Population {
             double f = solutions.get(i).rateFitness();
             updateStatistics(f);
         }
+    }
+
+    public List<Railroad> performEvaluationD(int start, int end) {
+        System.out.println("Thread " + Thread.currentThread() + " evaluating solutions from " + start + " to " + (end - 1));
+        List<Railroad> mySolutions = new ArrayList<>();
+        //evaluate all solutions
+        for (int i = start; i < end; i++) {
+            Railroad r = solutions.get(i);
+            r.rateFitness();
+            mySolutions.add(r);
+        }
+        return mySolutions;
     }
 
     public synchronized void updateStatistics(double f){

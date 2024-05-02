@@ -49,18 +49,18 @@ public class RSequential {
                 //if(p.CURRENT_GENERATION == 10){
 //                    newP.add(Main.generateTrivialSol());
                 r1.id=index;
+                index++;
                 r2.id=index;
                 newP.add(r1);
                 //System.out.println(index);
                 newP.add(r2);
-                index+=2;
+                index++;
                 //System.out.println(index);
             }
             p.setSolutions(newP);
             bestIndividual = p.getBestIndividual(); //solution to represent per generation
             bestIndividualQueue.offer(bestIndividual);
-            System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and generation "+p.CURRENT_GENERATION );
-
+            System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and numttrains "+ bestIndividual.numTrains+"and generation "+p.CURRENT_GENERATION );
             Population.CURRENT_GENERATION++;
             //System.out.println("current gen "+p.CURRENT_GENERATION);
 

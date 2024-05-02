@@ -85,7 +85,7 @@ public class TileDictionary {
 
     public int getKey(int[][] tile) {
         for (Map.Entry<Integer, int[][]> e:tileMap.entrySet()) {
-            if(e.getValue()==tile){
+            if(Arrays.deepEquals(e.getValue(),tile)){
                 return e.getKey();
             }
         }

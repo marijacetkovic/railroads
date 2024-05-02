@@ -30,18 +30,20 @@ public class PBuilderWorker implements Runnable {
             if(Math.random()<Config.CROSSOVER_RATE){
                 p.crossover(Config.SINGLE_POINT_CROSSOVER,r1,r2);
             }
-            //mutate
-            if(Math.random()<Config.MUTATION_RATE){
-                p.mutate(Config.INSERTION_MUTATION,r1);
-            }
-            if(Math.random()<Config.MUTATION_RATE){
-                p.mutate(Config.INSERTION_MUTATION,r2);
-            }
+            p.mutate(Config.INSERTION_MUTATION,r1);
+            p.mutate(Config.INSERTION_MUTATION,r2);
+
+            //add to new pop
+            //if(p.CURRENT_GENERATION == 10){
+//                    newP.add(Main.generateTrivialSol());
+            r1.id=start;
+            start++;
+            r2.id=start;
             //add to local pop
             workerP.add(r1);
             //System.out.println(index);
             workerP.add(r2);
-            start+=2;
+            start++;
             //System.out.println(index);
         }
         try {

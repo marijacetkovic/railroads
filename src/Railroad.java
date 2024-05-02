@@ -22,6 +22,10 @@ public class Railroad implements Comparable<Railroad>{
         //this.N = N;
         this.world = generateRandomMatrix(N);
         this.worldTransformed = Main.dict.transform(this.world);
+//        if(Math.random()<0.01){
+//            repairRandomTrain(10);
+//            transformBack();
+//        }
     }
 
     public void setFitness(int x){
@@ -78,16 +82,35 @@ public class Railroad implements Comparable<Railroad>{
         return false;
     }
 
+    public void transformBack (){
+        int[][] m = this.worldTransformed;
+        int n = m.length;
+        int[][] submatrix = new int[3][3];
+        for (int i = 0; i < n;) {
+            for (int j = 0; j < n;) {
+                submatrix = new int[3][3];
+                for (int k = 0; k < 3; k++) {
+                    for (int l = 0; l < 3; l++) {
+                        submatrix[k][l] = m[i+k][j+l];
+                    }
+                }
+                this.world[i/3][j/3]=Main.dict.getKey(submatrix);
+                j+=3;
+            }
+            i+=3;
+        }
+    }
 
 
-    private void performRepair(int i, int j, int endI, int endJ, boolean[][] visited) {
+    private void performRoadRepair(int i, int j, int endI, int endJ, boolean[][] visited) {
         if (i < 0 || j < 0 || i >= worldTransformed.length || j >= worldTransformed[0].length || visited[i][j]) {
            //do nothing
             return;
         }
-        if(worldTransformed[i][j] != 1 && ((i-1)%3==0)||(j-1)%3==0){
+        //System.out.println(worldTransformed[i][j]+" worldTransformed["+i+"]["+j+"] for id "+this.id);
+        if((worldTransformed[i][j] == 0) && ((i-1)%3==0||(j-1)%3==0)){
             worldTransformed[i][j] = 1;
-            transformSubmatrix(i,j);
+           // transformSubmatrix(i,j);
         }
         visited[i][j] = true;
         if (i == endI && j == endJ) {
@@ -97,21 +120,34 @@ public class Railroad implements Comparable<Railroad>{
         for (int[] dir : directions) {
             int newRow = i + dir[0];
             int newCol = j + dir[1];
-            performRepair(newRow, newCol, endI, endJ, visited);
+            performRoadRepair(newRow, newCol, endI, endJ, visited);
         }
-    }
 
-    private void transformSubmatrix(int i, int j){
-        int[][] m=new int[3][3];
-        // Fetching surrounding 8 coordinates and transforming them
+    }
+    public void repair(int startI, int startJ, int endI, int endJ) {
+        boolean[][] visited = new boolean[3*N][3*N];
+        for (int i = 0; i < visited.length; i++) {
+            Arrays.fill(visited[i], false);
+        }
+        performRoadRepair(startI, startJ, endI, endJ, visited);
+
+        //System.out.println("road repaired");
+    }
+    private void transformSubmatrix(int i, int j) {
+        int[][] m = new int[3][3];
         for (int x = i - 1; x <= i + 1; x++) {
             for (int y = j - 1; y <= j + 1; y++) {
-                m[i][j]=worldTransformed[i][j];
+                int rowIndex = (x - (i - 1)) % 3;
+                int colIndex = (y - (j - 1)) % 3;
+                if (x >= 0 && x < worldTransformed.length && y >= 0 && y < worldTransformed[0].length) {
+                    m[rowIndex][colIndex] = worldTransformed[x][y];
+                }
             }
         }
         int tileKey = Main.dict.getKey(m);
-        world[(i-1)/3][(j-1)/3]=tileKey;
+        world[(i - 1) / 3][(j - 1) / 3] = tileKey;
     }
+
 
     //generate random railroad instance
     public int[][] generateRandomMatrix(int size) {
@@ -186,6 +222,18 @@ public class Railroad implements Comparable<Railroad>{
         return this.fitness;
     }
 
+    public void repairRandomTrain (int n){
+        int c = 0;
+        while (c<n) {
+            int[] t = trains.get(random.nextInt(trains.size()));
+            //train coordinates are generated wrt tiles encoded by types
+            //to transform them into binary matrix i placed them in the center of the tile, 3*i+1
+            repair(3*t[0]+1,3*t[1]+1,3*t[2]+1,3*t[3]+1);
+            c++;
+        }
+    }
+
+
     public double rateFitnessWithPricing() {
         this.numTrains=0;
         this.selected = false;
@@ -195,8 +243,8 @@ public class Railroad implements Comparable<Railroad>{
             //to transform them into binary matrix i placed them in the center of the tile, 3*i+1
             this.numTrains+=DFS(3*t[0]+1,3*t[1]+1,3*t[2]+1,3*t[3]+1);
         }
-        this.fitness += getSum();
-        this.fitness -= scalingFactor * numTrains;
+        this.fitness += (getSum()/Math.pow(Config.WORLD_SIZE,2));
+        this.fitness += 100 * (Config.NUM_TRAINS - numTrains); //scaled num of trains that dont finish
         return this.fitness;
     }
 }
