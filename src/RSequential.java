@@ -26,37 +26,38 @@ public class RSequential {
                 index++;
             }
             // p.sortPopulation();
-            while(index<p.solutions.size()){
-                Railroad r1 = p.select(Config.ROULETTE_WHEEL_SELECTION);
-                Railroad r2 = p.select(Config.ROULETTE_WHEEL_SELECTION);
-                //crossover
-                Railroad[] children=null;
-                if(Math.random()<Config.CROSSOVER_RATE){
-                    p.crossover(Config.SINGLE_POINT_CROSSOVER,r1,r2);
-                }
-                //mutate
-//                if(Math.random()<Config.MUTATION_RATE){
-//                    p.mutate(Config.INSERTION_MUTATION,r1);
+            p.buildPopulation(index,p.solutions.size(),newP);
+//            while(index<p.solutions.size()){
+//                Railroad r1 = p.select(Config.ROULETTE_WHEEL_SELECTION);
+//                Railroad r2 = p.select(Config.ROULETTE_WHEEL_SELECTION);
+//                //crossover
+//
+//                if(Math.random()<Config.CROSSOVER_RATE){
+//                    p.crossover(Config.SINGLE_POINT_CROSSOVER,r1,r2);
 //                }
-//                if(Math.random()<Config.MUTATION_RATE){
-//                    p.mutate(Config.INSERTION_MUTATION,r2);
-//                }
-
-                p.mutate(Config.INSERTION_MUTATION,r1);
-                p.mutate(Config.INSERTION_MUTATION,r2);
-
-                //add to new pop
-                //if(p.CURRENT_GENERATION == 10){
-//                    newP.add(Main.generateTrivialSol());
-                r1.id=index;
-                index++;
-                r2.id=index;
-                newP.add(r1);
-                //System.out.println(index);
-                newP.add(r2);
-                index++;
-                //System.out.println(index);
-            }
+//                //mutate
+////                if(Math.random()<Config.MUTATION_RATE){
+////                    p.mutate(Config.INSERTION_MUTATION,r1);
+////                }
+////                if(Math.random()<Config.MUTATION_RATE){
+////                    p.mutate(Config.INSERTION_MUTATION,r2);
+////                }
+//
+//                p.mutate(Config.INSERTION_MUTATION,r1);
+//                p.mutate(Config.INSERTION_MUTATION,r2);
+//
+//                //add to new pop
+//                //if(p.CURRENT_GENERATION == 10){
+////                    newP.add(Main.generateTrivialSol());
+//                r1.id=index;
+//                index++;
+//                r2.id=index;
+//                newP.add(r1);
+//                //System.out.println(index);
+//                newP.add(r2);
+//                index++;
+//                //System.out.println(index);
+//            }
             p.setSolutions(newP);
             bestIndividual = p.getBestIndividual(); //solution to represent per generation
             bestIndividualQueue.offer(bestIndividual);

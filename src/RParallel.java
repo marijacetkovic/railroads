@@ -26,7 +26,9 @@ public class RParallel {
             p.resetStatistics();
             for (int i = 0; i < NUM_THREADS; i++) {
                 int start = i * (p.solutions.size() / NUM_THREADS);
-                int end = Math.min(p.solutions.size(), (i + 1) * (p.solutions.size() / NUM_THREADS));
+                int end = (int) Math.min(p.solutions.size(), (i + 1) * Math.ceil((double) p.solutions.size() / NUM_THREADS));
+
+
                 tp.submit(new EvaluatorWorker(p, start, end, barrier));
             }
             try {

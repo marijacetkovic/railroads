@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.*;
 
-public class Railroad implements Comparable<Railroad>{
+public class Railroad implements Serializable {
     //represents a chromosome - collection of genes
     int N=Config.WORLD_SIZE;
     double fitness;
@@ -204,10 +205,7 @@ public class Railroad implements Comparable<Railroad>{
         return sum;
     }
 
-    @Override
-    public int compareTo(Railroad o) {
-        return Double.compare(this.fitness, o.fitness);
-    }
+
 
     //fitness evaluation function
     public double rateFitness() {

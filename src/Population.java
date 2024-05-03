@@ -93,7 +93,7 @@ public class Population {
     }
 
     public void performEvaluation2(int start, int end) {
-        System.out.println("Thread " + Thread.currentThread() + " evaluating solutions from " + start + " to " + (end - 1));
+        System.out.println("Thread " + Thread.currentThread().getName() + " evaluating solutions from " + start + " to " + (end - 1));
         //evaluate all solutions
         for (int i = start; i < end; i++) {
             double f = solutions.get(i).rateFitness();
@@ -101,7 +101,7 @@ public class Population {
         }
     }
 
-    public List<Railroad> performEvaluationD(int start, int end) {
+    public List<Railroad> performEvaluationD(int start, int end, int rank) {
         System.out.println("Thread " + Thread.currentThread() + " evaluating solutions from " + start + " to " + (end - 1));
         List<Railroad> mySolutions = new ArrayList<>();
         //evaluate all solutions
@@ -109,6 +109,7 @@ public class Population {
             Railroad r = solutions.get(i);
             r.rateFitness();
             mySolutions.add(r);
+            System.out.println("i am process "+rank+"amd i evaluated index "+i);
         }
         return mySolutions;
     }
@@ -224,12 +225,38 @@ public class Population {
         }
     }
 
-    public void sortPopulation(){
-        //used for truncation selection
-        tsIndex = this.solutions.size(); //reset counter
-        Collections.sort(this.solutions); //sort
-    }
+//    public void sortPopulation(){
+//        //used for truncation selection
+//        tsIndex = this.solutions.size(); //reset counter
+//        Collections.sort(this.solutions); //sort
+//    }
 
+    public List<Railroad> buildPopulation(int start, int end, List<Railroad> newP){
+        while(start<end){
+            Railroad r1 = this.select(Config.ROULETTE_WHEEL_SELECTION);
+            Railroad r2 = this.select(Config.ROULETTE_WHEEL_SELECTION);
+            //crossover
+            if(Math.random()<Config.CROSSOVER_RATE){
+                this.crossover(Config.SINGLE_POINT_CROSSOVER,r1,r2);
+            }
+            this.mutate(Config.INSERTION_MUTATION,r1);
+            this.mutate(Config.INSERTION_MUTATION,r2);
+
+            //add to new pop
+            //if(p.CURRENT_GENERATION == 10){
+//                    newP.add(Main.generateTrivialSol());
+            r1.id=start;
+            start++;
+            r2.id=start;
+            //add to local pop
+            newP.add(r1);
+            //System.out.println(index);
+            newP.add(r2);
+            start++;
+            //System.out.println(index);
+        }
+        return newP;
+    }
     //returns a railroad with best fitness
     public Railroad getBestSolutions(){
         double bestScore = -100;

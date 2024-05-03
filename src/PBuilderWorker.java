@@ -23,29 +23,7 @@ public class PBuilderWorker implements Runnable {
     @Override
     public void run() {
         // Process each solution in the chunk
-        while(start<end){
-            Railroad r1 = p.select(Config.ROULETTE_WHEEL_SELECTION);
-            Railroad r2 = p.select(Config.ROULETTE_WHEEL_SELECTION);
-            //crossover
-            if(Math.random()<Config.CROSSOVER_RATE){
-                p.crossover(Config.SINGLE_POINT_CROSSOVER,r1,r2);
-            }
-            p.mutate(Config.INSERTION_MUTATION,r1);
-            p.mutate(Config.INSERTION_MUTATION,r2);
-
-            //add to new pop
-            //if(p.CURRENT_GENERATION == 10){
-//                    newP.add(Main.generateTrivialSol());
-            r1.id=start;
-            start++;
-            r2.id=start;
-            //add to local pop
-            workerP.add(r1);
-            //System.out.println(index);
-            workerP.add(r2);
-            start++;
-            //System.out.println(index);
-        }
+        p.buildPopulation(start,end,workerP);
         try {
             results.add(workerP);
             //updateResults(workerP);

@@ -36,10 +36,10 @@ public class Main {
             frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         }
-        new RSequential(p,bestIndividual,bestIndividualQueue).execute();
+        //new RSequential(p,bestIndividual,bestIndividualQueue).execute();
 
-        //new RParallel(8,p,bestIndividual,bestIndividualQueue).execute();
-       // new RDistributed().execute();
+        //new RParallel(3,p,bestIndividual,bestIndividualQueue).execute();
+        new RDistributed(p,bestIndividual,bestIndividualQueue).execute(args);
     }
 
     public static Railroad getBestIndividual(){
