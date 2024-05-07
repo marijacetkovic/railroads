@@ -5,7 +5,7 @@ public class Config {
     public static final int POPULATION_SIZE = 10;
     public static final double CROSSOVER_RATE = 0.8;
     public static final double MUTATION_RATE = 0.05;
-    final static int ELITISM_K = (int)(0.0*POPULATION_SIZE);
+    final static int ELITISM_K = (int)(0.1*POPULATION_SIZE);
     public static final int CANVAS_SIZE = 800;
     public static final int RANDOM_SEED = 4;
     public static final boolean RENDER_GUI = false;

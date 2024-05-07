@@ -9,6 +9,7 @@ public class RParallel {
     private BlockingQueue<Railroad> bestIndividualQueue;
     private CyclicBarrier barrier;
     ConcurrentLinkedQueue<List<Railroad>> results = new ConcurrentLinkedQueue<>();
+    ExecutorService tp;
 
 
     public RParallel(int numThreads, Population population, Railroad bestIndividual, BlockingQueue<Railroad> bestIndividualQueue) {
@@ -17,18 +18,18 @@ public class RParallel {
         this.bestIndividual = bestIndividual;
         this.bestIndividualQueue = bestIndividualQueue;
         this.barrier = new CyclicBarrier(NUM_THREADS+1);
+        this.tp = Executors.newFixedThreadPool(NUM_THREADS);
     }
 
     public void execute(){
-        ExecutorService tp = Executors.newFixedThreadPool(NUM_THREADS);
 
         while(p.CURRENT_GENERATION<Config.NUM_GENERATIONS){
             p.resetStatistics();
+            int chunk = (int) Math.ceil((double) p.solutions.size()/NUM_THREADS);
             for (int i = 0; i < NUM_THREADS; i++) {
-                int start = i * (p.solutions.size() / NUM_THREADS);
-                int end = (int) Math.min(p.solutions.size(), (i + 1) * Math.ceil((double) p.solutions.size() / NUM_THREADS));
-
-
+                int start = i * chunk;
+                int end = Math.min(p.solutions.size(), (i + 1) * chunk);
+                System.out.println("thread +"+i+"start "+start +" end "+end);
                 tp.submit(new EvaluatorWorker(p, start, end, barrier));
             }
             try {
@@ -37,25 +38,28 @@ public class RParallel {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            p.updateAllStatistics();
             p.printPopulationStatistics();
 
             List<Railroad> newP = new ArrayList<>(10);
-            int index=0;
+            int offset=0;
 
             //choose the elite
             for (int i = 0; i < Config.ELITISM_K; i++) {
                 Railroad r = p.getBestSolutions();
+                r.id=offset;
                 // r.selected=false;
                 newP.add(r);
-                index++;
+                offset++;
             }
             //building the population with leftover p size - elitism places
             int CAPACITY = p.POPULATION_SIZE - Config.ELITISM_K;
+            chunk = (int) Math.ceil((double) CAPACITY/NUM_THREADS);
             System.out.println(CAPACITY+"capacity");
             results = new ConcurrentLinkedQueue<>();
             for (int i = 0; i < NUM_THREADS; i++) {
-                int start = i * (CAPACITY / NUM_THREADS);
-                int end = Math.min(CAPACITY, (i + 1) * (CAPACITY / NUM_THREADS));
+                int start = i * chunk;
+                int end = Math.min(p.solutions.size(), (i + 1) * chunk);
                 System.out.println("start "+start+" end "+end +" for thread i ");
                 tp.submit(new PBuilderWorker(p, start, end, barrier,results));
             }
@@ -69,7 +73,12 @@ public class RParallel {
 
             // collect the solutions
             for(List<Railroad> l:results){
-                newP.addAll(l);
+                int sizeToAdd = Math.min(CAPACITY, l.size());
+                newP.addAll(l.subList(0, sizeToAdd));
+                CAPACITY -= sizeToAdd;
+                if (CAPACITY <= 0) {
+                    break;
+                }
             }
             System.out.println(newP.size()+" size of newp");
             try {

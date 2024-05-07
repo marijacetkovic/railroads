@@ -97,7 +97,7 @@ public class Population {
         //evaluate all solutions
         for (int i = start; i < end; i++) {
             double f = solutions.get(i).rateFitness();
-            updateStatistics(f);
+            //updateStatistics(f);
         }
     }
 
@@ -118,6 +118,12 @@ public class Population {
         this.totalFitness += f;
         //System.out.println(this.totalFitness);
         this.maxFitness = Math.max(maxFitness, f);
+    }
+    public void updateAllStatistics(){
+        for ( Railroad r: solutions) {
+            this.totalFitness += r.fitness;
+            this.maxFitness = Math.max(maxFitness, r.fitness);
+        }
     }
     //collect statistics?????
 
@@ -255,6 +261,8 @@ public class Population {
             start++;
             //System.out.println(index);
         }
+        System.out.println("Thread " + Thread.currentThread() + " built solutions of size "+ newP.size());
+
         return newP;
     }
     //returns a railroad with best fitness
