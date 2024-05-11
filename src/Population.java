@@ -102,14 +102,14 @@ public class Population {
     }
 
     public List<Railroad> performEvaluationD(int start, int end, int rank) {
-        System.out.println("Thread " + Thread.currentThread() + " evaluating solutions from " + start + " to " + (end - 1));
+        //System.out.println("Thread " + Thread.currentThread() + " evaluating solutions from " + start + " to " + (end - 1));
         List<Railroad> mySolutions = new ArrayList<>();
         //evaluate all solutions
         for (int i = start; i < end; i++) {
             Railroad r = solutions.get(i);
             r.rateFitness();
             mySolutions.add(r);
-            System.out.println("i am process "+rank+"amd i evaluated index "+i);
+            //System.out.println("i am process "+rank+"amd i evaluated index "+i);
         }
         return mySolutions;
     }
@@ -299,7 +299,5 @@ public class Population {
     public void setSolutions(List<Railroad> solutions) {
         this.solutions = solutions;
     }
-//    public Railroad getNewIndividual(){
-//        return new Railroad(.trains);
-//    }
+
 }

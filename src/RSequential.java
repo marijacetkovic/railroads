@@ -27,10 +27,11 @@ public class RSequential {
             }
             p.buildPopulation(index,p.solutions.size(),newP);
             p.setSolutions(newP);
+            Population.CURRENT_GENERATION++;
             bestIndividual = p.getBestIndividual(); //solution to represent per generation
+            bestIndividual.generation = Population.CURRENT_GENERATION;
             bestIndividualQueue.offer(bestIndividual);
             System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and numttrains "+ bestIndividual.numTrains+"and generation "+p.CURRENT_GENERATION );
-            Population.CURRENT_GENERATION++;
             //System.out.println("current gen "+p.CURRENT_GENERATION);
 
         }

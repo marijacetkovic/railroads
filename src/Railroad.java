@@ -9,6 +9,7 @@ public class Railroad implements Serializable {
     int[][] world;
     int[][] worldTransformed;
     List<int[]> trains;
+    int generation;
     double numTrains;
     double scalingFactor=1.5;
     Random random = new Random();

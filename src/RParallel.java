@@ -30,7 +30,7 @@ public class RParallel {
                 int start = i * chunk;
                 int end = Math.min(p.solutions.size(), (i + 1) * chunk);
                 System.out.println("thread +"+i+"start "+start +" end "+end);
-                tp.submit(new EvaluatorWorker(p, start, end, barrier));
+                tp.submit(new PEvaluatorWorker(p, start, end, barrier));
             }
             try {
                 barrier.await();

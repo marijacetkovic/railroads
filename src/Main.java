@@ -1,4 +1,5 @@
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -27,20 +28,21 @@ public class Main {
 //        }
         //int[][] world = Main.dict.transform(w.world);
 
-        if(Config.RENDER_GUI){
-            Gfx gui = new Gfx(trains,bestIndividualQueue);
-            JFrame frame = new JFrame("Railroads");
-            frame.setSize(Config.CANVAS_SIZE, Config.CANVAS_SIZE);
-            frame.add(gui);
-            frame.setVisible(true);
-            frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        }
-         //new RSequential(p,bestIndividual,bestIndividualQueue).execute();
+        SwingUtilities.invokeLater(() -> {
+            if (Config.RENDER_GUI) {
+                Gfx gui = new Gfx(trains, bestIndividualQueue);
+                JFrame frame = new JFrame("Railroads");
+                frame.setSize(1000, 1000);
+                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame.add(gui);
+                frame.setVisible(true);
+            }
+        });
+         new RSequential(p,bestIndividual,bestIndividualQueue).execute();
 
         //new RParallel(8,p,bestIndividual,bestIndividualQueue).execute();
 
-        new RDistributed(p,bestIndividual,bestIndividualQueue).execute(args);
+        //new RDistributed(p,bestIndividual,bestIndividualQueue).execute(args);
     }
 
     public static Railroad getBestIndividual(){
