@@ -24,13 +24,13 @@ public class RDistributed {
         int rank = MPI.COMM_WORLD.Rank();
         int size = MPI.COMM_WORLD.Size();
 
-        while(p.CURRENT_GENERATION<Config.NUM_GENERATIONS){
+        while(p.getCurrentGeneration()<Config.NUM_GENERATIONS){
             p.resetStatistics();
             //get its own chunk of population
-            int chunk = (int) Math.ceil((double) p.solutions.size()/size);
-            System.out.println("chunk size is "+chunk+" and pop size is "+p.solutions.size());
+            int chunk = (int) Math.ceil((double) p.getSolutions().size()/size);
+            System.out.println("chunk size is "+chunk+" and pop size is "+p.getSolutions().size());
             int start = rank * chunk;
-            int end = Math.min(p.solutions.size(), (rank + 1) * chunk);
+            int end = Math.min(p.getSolutions().size(), (rank + 1) * chunk);
             //System.out.println("for process "+rank+" start is "+start+" and end is "+end);
 
             //perform eval on chunk of population
@@ -42,7 +42,7 @@ public class RDistributed {
                 throw new RuntimeException(e);
             }
             //gather the solutions
-            int minChunkSize = Math.min(p.solutions.size(),size*chunk) - (size-1)*chunk;
+            int minChunkSize = Math.min(p.getSolutions().size(),size*chunk) - (size-1)*chunk;
             System.out.println("minChunksize "+minChunkSize);
             //List<List<Railroad>> allSolutions = gatherSolutions(mySolutions, rank, size,minChunkSize);
             //System.out.println("for process with rank "+rank+" size of allSolutions is "+allSolutions.size());
@@ -59,7 +59,7 @@ public class RDistributed {
             //System.out.println("for process with rank "+rank+" size of allSolutions is "+allSolutions.size());
 
 
-            List<Railroad> evaluatedSolutions = combineSolutions(allSolutions,p.POPULATION_SIZE);
+            List<Railroad> evaluatedSolutions = combineSolutions(allSolutions,p.getPSize());
             System.out.println("for process with rank "+rank+" size of evaluatedSolutions is "+evaluatedSolutions.size());
 
             //update local p
@@ -69,8 +69,8 @@ public class RDistributed {
             MPI.COMM_WORLD.Barrier();
             List<Railroad> eliteP=new ArrayList<>();
             if (rank == 0){ // just root process printing stats
-                System.out.println(p.solutions.size()+" sol size");
-                for (Railroad r:p.solutions) {
+                System.out.println(p.getSolutions().size()+" sol size");
+                for (Railroad r: p.getSolutions()) {
                 //    System.out.println(r);
                 }
                 p.updateAllStatistics();
@@ -87,7 +87,7 @@ public class RDistributed {
                 }
             }
             //building the population with leftover p size - elitism places
-            int CAPACITY = p.POPULATION_SIZE - Config.ELITISM_K;
+            int CAPACITY = p.getPSize() - Config.ELITISM_K;
            System.out.println(CAPACITY+"capacity"+" for worker "+rank);
 
             //get chunk of population which process x will be building
@@ -119,9 +119,9 @@ public class RDistributed {
             if(rank==0){
                 bestIndividual = p.getBestIndividual();
                 bestIndividualQueue.offer(bestIndividual);
-                System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and generation "+p.CURRENT_GENERATION );
-                Population.CURRENT_GENERATION++;
-                System.out.println("current gen "+p.CURRENT_GENERATION);
+                System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and generation "+p.getCurrentGeneration() );
+                Population.increaseCurrentGeneration();
+                System.out.println("current gen "+p.getCurrentGeneration());
             }
             MPI.COMM_WORLD.Barrier();
 

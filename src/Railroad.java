@@ -1,7 +1,7 @@
 import java.io.Serializable;
 import java.util.*;
 
-public class Railroad implements Serializable {
+public class Railroad implements Serializable, Comparable<Railroad> {
     //represents a chromosome - collection of genes
     int N=Config.WORLD_SIZE;
     double fitness;
@@ -51,7 +51,7 @@ public class Railroad implements Serializable {
         boolean found = depthFirstSearch(startI, startJ, endI, endJ, visited);
 
         if (found) {
-            if (Population.CURRENT_GENERATION==Config.NUM_GENERATIONS-1){
+            if (Population.getCurrentGeneration()==Config.NUM_GENERATIONS-1){
                 //System.out.println("found train with coordinates  " +endI +" "+endJ+"at railroad with id "+id);
             }
             return 1;
@@ -245,5 +245,17 @@ public class Railroad implements Serializable {
         this.fitness += (getSum()/Math.pow(Config.WORLD_SIZE,2));
         this.fitness += 100 * (Config.NUM_TRAINS - numTrains); //scaled num of trains that dont finish
         return this.fitness;
+    }
+
+    @Override
+    public int compareTo(Railroad o) {
+        // Compare based on fitness
+        if (this.fitness < o.getFitness()) {
+            return -1;
+        } else if (this.fitness > o.getFitness()) {
+            return 1;
+        } else {
+            return 0;
+        }
     }
 }

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class RSequential {
@@ -14,7 +15,7 @@ public class RSequential {
         this.bestIndividualQueue = bestIndividualQueue;
     }
     public void execute(){
-        while(p.CURRENT_GENERATION<Config.NUM_GENERATIONS){
+        while(p.getCurrentGeneration()<Config.NUM_GENERATIONS){
             p.performEvaluation();
             List<Railroad> newP = new ArrayList<>(10);
             int index=0;
@@ -25,16 +26,18 @@ public class RSequential {
                 newP.add(r);
                 index++;
             }
-            p.buildPopulation(index,p.solutions.size(),newP);
+
+            p.buildPopulation(index, p.getSolutions().size(),newP);
             p.setSolutions(newP);
-            Population.CURRENT_GENERATION++;
+            Population.increaseCurrentGeneration();
             bestIndividual = p.getBestIndividual(); //solution to represent per generation
-            bestIndividual.generation = Population.CURRENT_GENERATION;
+            bestIndividual.generation = Population.getCurrentGeneration();
             bestIndividualQueue.offer(bestIndividual);
-            System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and numttrains "+ bestIndividual.numTrains+"and generation "+p.CURRENT_GENERATION );
+            System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and numttrains "+ bestIndividual.numTrains+"and generation "+Population.getCurrentGeneration() );
             //System.out.println("current gen "+p.CURRENT_GENERATION);
 
         }
+        RChart.saveChart();
     }
 
 }

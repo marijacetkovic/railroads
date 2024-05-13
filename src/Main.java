@@ -13,7 +13,7 @@ public class Main {
 
     public static Population p = new Population();
 
-    static Railroad bestIndividual = p.solutions.get(0);
+    static Railroad bestIndividual = p.getSolutions().get(0);
     private static BlockingQueue<Railroad> bestIndividualQueue = new LinkedBlockingQueue<>();
 
     public static void main(String[] args) {

@@ -1,6 +1,6 @@
 public class Config {
-    public static final int NUM_GENERATIONS = 1000;
-    public static final int WORLD_SIZE = 20;
+    public static final int NUM_GENERATIONS = 100;
+    public static final int WORLD_SIZE = 10;
     public static final int NUM_TRAINS = 30;
     public static final int POPULATION_SIZE = 1000;
     public static final double CROSSOVER_RATE = 0.8;
@@ -8,7 +8,7 @@ public class Config {
     final static int ELITISM_K = (int)(0.01*POPULATION_SIZE);
     public static final int CANVAS_SIZE = 800;
     public static final int RANDOM_SEED = 4;
-    public static final boolean RENDER_GUI = true;
+    public static final boolean RENDER_GUI = false;
     final static int ROULETTE_WHEEL_SELECTION = 0;
     public final static int TRUNCATION_SELECTION = 1;
     public final static int TEST_SELECTION = 2;

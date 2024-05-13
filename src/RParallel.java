@@ -23,12 +23,12 @@ public class RParallel {
 
     public void execute(){
 
-        while(p.CURRENT_GENERATION<Config.NUM_GENERATIONS){
+        while(Population.getCurrentGeneration()<Config.NUM_GENERATIONS){
             p.resetStatistics();
-            int chunk = (int) Math.ceil((double) p.solutions.size()/NUM_THREADS);
+            int chunk = (int) Math.ceil((double) p.getSolutions().size()/NUM_THREADS);
             for (int i = 0; i < NUM_THREADS; i++) {
                 int start = i * chunk;
-                int end = Math.min(p.solutions.size(), (i + 1) * chunk);
+                int end = Math.min(p.getSolutions().size(), (i + 1) * chunk);
                 System.out.println("thread +"+i+"start "+start +" end "+end);
                 tp.submit(new PEvaluatorWorker(p, start, end, barrier));
             }
@@ -53,13 +53,13 @@ public class RParallel {
                 offset++;
             }
             //building the population with leftover p size - elitism places
-            int CAPACITY = p.POPULATION_SIZE - Config.ELITISM_K;
+            int CAPACITY = p.getPSize() - Config.ELITISM_K;
             chunk = (int) Math.ceil((double) CAPACITY/NUM_THREADS);
             System.out.println(CAPACITY+"capacity");
             results = new ConcurrentLinkedQueue<>();
             for (int i = 0; i < NUM_THREADS; i++) {
                 int start = i * chunk;
-                int end = Math.min(p.solutions.size(), (i + 1) * chunk);
+                int end = Math.min(p.getSolutions().size(), (i + 1) * chunk);
                 System.out.println("start "+start+" end "+end +" for thread i ");
                 tp.submit(new PBuilderWorker(p, start, end, barrier,results));
             }
@@ -91,9 +91,9 @@ public class RParallel {
 
             bestIndividual = p.getBestIndividual(); //solution to represent per generation
             bestIndividualQueue.offer(bestIndividual);
-            System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and generation "+p.CURRENT_GENERATION );
+            System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and generation "+Population.getCurrentGeneration() );
 
-            Population.CURRENT_GENERATION++;
+            Population.increaseCurrentGeneration();
             //System.out.println("current gen "+p.CURRENT_GENERATION);
 
         }

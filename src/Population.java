@@ -1,27 +1,77 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Random;
 
 public class Population {
-    public double totalFitness;
-    public double maxFitness;
-    public double avgFitness;
-    public static List<Railroad> solutions = new ArrayList<>();
-    public static int CURRENT_GENERATION=1;
-    public int POPULATION_SIZE = Config.POPULATION_SIZE;
-
-    static int tsIndex = -1;
-
-    Random r = new Random(4);
-
-    public Population(){
+    private static List<Railroad> solutions;
+    private static int currentGeneration;
+    private final int pSize;
+    private double totalFitness;
+    private double maxFitness;
+    private double avgFitness;
+    private static int tsIndex = -1;
+    private PriorityQueue<Railroad> eQueue;
+    private Random r;
+    public static List<double[]> pData = new ArrayList<>();
+    public Population() {
+        r = new Random(4);
+        pSize = Config.POPULATION_SIZE;
+        solutions = new ArrayList<>();
         initializeSolutions();
-        //System.out.println("im here"+ solutions.size());
+        currentGeneration = 1;
+        eQueue = new PriorityQueue<Railroad>();
     }
 
+    public static void increaseCurrentGeneration() {
+        currentGeneration++;
+    }
+
+    public List<Railroad> getSolutions() {
+        return solutions;
+    }
+    public int getPSize(){
+        return pSize;
+    }
+
+    public double getTotalFitness() {
+        return totalFitness;
+    }
+
+    public void setTotalFitness(double totalFitness) {
+        this.totalFitness = totalFitness;
+    }
+
+    public double getMaxFitness() {
+        return maxFitness;
+    }
+
+    public void setMaxFitness(double maxFitness) {
+        this.maxFitness = maxFitness;
+    }
+
+    public double getAvgFitness() {
+        return avgFitness;
+    }
+
+    public void setAvgFitness(double avgFitness) {
+        this.avgFitness = avgFitness;
+    }
+
+    public static int getCurrentGeneration() {
+        return currentGeneration;
+    }
+    public static List<double[]> getPData(){
+        return pData;
+    }
+
+    public void setCurrentGeneration(int currentGeneration) {
+        this.currentGeneration = currentGeneration;
+    }
+
+
     public void initializeSolutions(){
-        for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int i = 0; i < pSize; i++) {
             solutions.add(new Railroad(Main.trains,i)); //train coordinates should be supplied
         }
     }
@@ -34,7 +84,6 @@ public class Population {
           //  System.out.println();
         }
     }
-
 
 
     public void singlePointCrossover(Railroad r1, Railroad r2){
@@ -68,27 +117,33 @@ public class Population {
         this.totalFitness = 0.0;
         this.maxFitness = Double.MIN_VALUE;
         this.avgFitness = 0;
-        for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int i = 0; i < pSize; i++) {
             //double f = solutions.get(i).rateFitness();
             double f = solutions.get(i).rateFitness();
             this.totalFitness += f;
             this.maxFitness = Math.max(maxFitness, f);
         }
-        this.avgFitness = totalFitness/POPULATION_SIZE;
+        this.avgFitness = totalFitness/pSize;
         printPopulationStatistics();
+        savePopulationStatistics();
     }
+
+    private void savePopulationStatistics() {
+        pData.add(new double[]{maxFitness, avgFitness});
+    }
+
     public void performEvaluationM() {
         //evaluate all solutions
         this.totalFitness = 0.0;
         this.maxFitness = Double.MAX_VALUE;
         this.avgFitness = 0;
-        for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int i = 0; i < pSize; i++) {
             //double f = solutions.get(i).rateFitness();
             double f = solutions.get(i).rateFitnessWithPricing();
             this.totalFitness += f;
             this.maxFitness = Math.min(maxFitness, f);
         }
-        this.avgFitness = totalFitness/POPULATION_SIZE;
+        this.avgFitness = totalFitness/pSize;
         printPopulationStatistics();
     }
 
@@ -134,7 +189,7 @@ public class Population {
     }
 
     public void printPopulationStatistics(){
-        this.avgFitness = totalFitness/POPULATION_SIZE;
+        this.avgFitness = totalFitness/pSize;
         System.out.println("Total fitness: "+totalFitness+"   |   Max fitness: "+maxFitness+"   |   Avg fitness: "+avgFitness);
     }
 
@@ -144,14 +199,14 @@ public class Population {
         //keeps population diverse
         double rand = Math.random() * this.totalFitness; //rnd nr between 0 and total fitness of the population
         int index =  0;
-        for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int i = 0; i < pSize; i++) {
             rand -= solutions.get(i).getFitness();
             if(rand<0){
                 index = i;
                 break;
             }
         }
-        // index = r.nextInt(POPULATION_SIZE);
+        // index = r.nextInt(pSize);
 
         //System.out.println("Selected individual at index "+index);
         Railroad selected = solutions.get(index);
@@ -168,7 +223,7 @@ public class Population {
         Railroad r = null;
 
         while (r==null) {
-            int rand = (int) (Math.random() * POPULATION_SIZE);
+            int rand = (int) (Math.random() * pSize);
             r = solutions.get(rand);
             if (r.getFitness() >= lowerBound) {
                 return r;
@@ -266,10 +321,10 @@ public class Population {
         return newP;
     }
     //returns a railroad with best fitness
-    public Railroad getBestSolutions(){
+    public Railroad getBestSolutionsLinear(){
         double bestScore = -100;
         int index = 0;
-        for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int i = 0; i < pSize; i++) {
             Railroad r = solutions.get(i);
             if(r.fitness>bestScore&&!r.selected){
                 bestScore = r.fitness;
@@ -281,11 +336,25 @@ public class Population {
         //System.out.println("best at index "+index+" with fitness "+bestScore);
         return selected;
     }
-
+    public Railroad getBestSolutions(){
+        double bestScore = -100;
+        int index = 0;
+        for (int i = 0; i < pSize; i++) {
+            Railroad r = solutions.get(i);
+            if(r.fitness>bestScore&&!r.selected){
+                bestScore = r.fitness;
+                index = i;
+            }
+        }
+        Railroad selected = solutions.get(index);
+        selected.selected=true;
+        //System.out.println("best at index "+index+" with fitness "+bestScore);
+        return selected;
+    }
     public Railroad getBestIndividual(){
         double bestScore = -100;
         int index = 0;
-        for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int i = 0; i < pSize; i++) {
             Railroad r = solutions.get(i);
             if(r.fitness>bestScore){
                 bestScore = r.fitness;
