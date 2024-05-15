@@ -1,5 +1,7 @@
+import util.Config;
+import util.TileDictionary;
+
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -38,11 +40,17 @@ public class Main {
                 frame.setVisible(true);
             }
         });
-         new RSequential(p,bestIndividual,bestIndividualQueue).execute();
-
+//        double start = System.currentTimeMillis();
+//         new RSequential(p,bestIndividual,bestIndividualQueue).execute();
+//        double end = System.currentTimeMillis();
+//        System.out.println("Sequential time is "+(end-start));
+//        double start2 = System.currentTimeMillis();
+//        new RParallel(8,p,bestIndividual,bestIndividualQueue).execute();
+//        double end2 = System.currentTimeMillis();
+//        System.out.println("Parallel time is "+(end2-start2));
         //new RParallel(8,p,bestIndividual,bestIndividualQueue).execute();
 
-        //new RDistributed(p,bestIndividual,bestIndividualQueue).execute(args);
+        new RDistributed(p,bestIndividual,bestIndividualQueue).execute(args);
     }
 
     public static Railroad getBestIndividual(){
@@ -68,20 +76,4 @@ public class Main {
         return train;
     }
 
-    public static Railroad generateTrivialSol(){
-            int n = Config.WORLD_SIZE;
-            int[][] matrix = new int[n][n];
-
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    matrix[i][j] = 11;
-                    //System.out.print(matrix[i][j]+ " ");
-                }
-                //System.out.println();
-            }
-
-            Railroad r = new Railroad(trains,-1);
-            r.setWorld(matrix);
-            return r;
-    }
 }

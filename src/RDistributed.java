@@ -1,4 +1,6 @@
 import mpi.*;
+import util.Config;
+import util.WorkSplitter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,12 +12,15 @@ public class RDistributed {
     private Population p;
     private Railroad bestIndividual;
     private ConcurrentLinkedQueue<Railroad> bestIndividualQueue = new ConcurrentLinkedQueue<>();
+    private WorkSplitter wSplitter;
+
 
     public RDistributed(Population population, Railroad bestIndividual, BlockingQueue<Railroad> bestIndividualQueue) {
         //this.NUM_THREADS = numThreads;
         this.p = population;
         this.bestIndividual = bestIndividual;
-       // this.bestIndividualQueue = bestIndividualQueue;
+
+        // this.bestIndividualQueue = bestIndividualQueue;
         //this.barrier = new CyclicBarrier(NUM_THREADS+1);
     }
 
@@ -23,15 +28,15 @@ public class RDistributed {
         MPI.Init(args);
         int rank = MPI.COMM_WORLD.Rank();
         int size = MPI.COMM_WORLD.Size();
+        wSplitter = new WorkSplitter(p.getSolutions().size(), size);
 
         while(p.getCurrentGeneration()<Config.NUM_GENERATIONS){
             p.resetStatistics();
             //get its own chunk of population
-            int chunk = (int) Math.ceil((double) p.getSolutions().size()/size);
-            System.out.println("chunk size is "+chunk+" and pop size is "+p.getSolutions().size());
-            int start = rank * chunk;
-            int end = Math.min(p.getSolutions().size(), (rank + 1) * chunk);
-            //System.out.println("for process "+rank+" start is "+start+" and end is "+end);
+            wSplitter.setSize(p.getSolutions().size());
+            int start = wSplitter.getStart(rank);
+            int end = wSplitter.getEnd(rank);
+            System.out.println("for process "+rank+" start is "+start+" and end is "+end);
 
             //perform eval on chunk of population
             List<Railroad> mySolutions = p.performEvaluationD(start,end,rank);
@@ -42,7 +47,7 @@ public class RDistributed {
                 throw new RuntimeException(e);
             }
             //gather the solutions
-            int minChunkSize = Math.min(p.getSolutions().size(),size*chunk) - (size-1)*chunk;
+            int minChunkSize = wSplitter.getMinChunkSize();
             System.out.println("minChunksize "+minChunkSize);
             //List<List<Railroad>> allSolutions = gatherSolutions(mySolutions, rank, size,minChunkSize);
             //System.out.println("for process with rank "+rank+" size of allSolutions is "+allSolutions.size());
@@ -91,9 +96,9 @@ public class RDistributed {
            System.out.println(CAPACITY+"capacity"+" for worker "+rank);
 
             //get chunk of population which process x will be building
-            chunk = (int) Math.ceil((double) CAPACITY/size);
-            start = rank * chunk;
-            end =  Math.min(CAPACITY, (rank + 1) * chunk);
+            wSplitter.setSize(CAPACITY);
+            start = wSplitter.getStart(rank);
+            end = wSplitter.getEnd(rank);
             System.out.println("start "+start+" end "+end +" for process "+rank);
             //process builds its chunk of pop
             List<Railroad> workerP = p.buildPopulation(start,end,new ArrayList<>());

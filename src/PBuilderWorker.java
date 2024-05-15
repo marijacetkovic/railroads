@@ -11,7 +11,7 @@ public class PBuilderWorker implements Runnable {
     private CyclicBarrier barrier;
     ConcurrentLinkedQueue<List<Railroad>> results;
 
-    public PBuilderWorker(Population p, int start, int end, CyclicBarrier barrier,ConcurrentLinkedQueue<List<Railroad>> results) {
+    public PBuilderWorker(Population p, int start, int end, CyclicBarrier barrier, ConcurrentLinkedQueue<List<Railroad>> results) {
         this.p = p;
         this.start = start;
         this.end = end;

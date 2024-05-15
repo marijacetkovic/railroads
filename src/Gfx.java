@@ -1,3 +1,5 @@
+import util.Config;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -5,12 +7,10 @@ import java.util.concurrent.BlockingQueue;
 
 public class Gfx extends JPanel {
     public List<int[]> trains;
-    public int pointWidth = 10;
     public int N;
     Population p = Main.p;
-    public static int canvasSize = 700;
+    public static int canvasSize;
     int circleDiameter;
-    int generation = 0;
     int offsetCentre;
     BlockingQueue<Railroad> bestIndividualQueue;
     private int generationLabelWidth=30;
@@ -19,6 +19,7 @@ public class Gfx extends JPanel {
         //this.solutions = solutions;
         this.trains = trains;
         this.N = Config.WORLD_SIZE * 3;
+        canvasSize = 700;
         circleDiameter = canvasSize / N;
         offsetCentre = circleDiameter/2;
         this.bestIndividualQueue = bestIndividualQueue;

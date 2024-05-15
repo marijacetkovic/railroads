@@ -1,22 +1,30 @@
-public class WorkSplitter {
-    private final int capacity;
-    private final int size;
-    private final int numChunks;
+package util;
 
+public class WorkSplitter {
+    private int capacity;
+    private final int size;
     public WorkSplitter(int capacity, int size) {
         this.capacity = capacity;
         this.size = size;
-        this.numChunks = (int) Math.ceil((double) capacity / size);
     }
 
-    public int calculateStart(int rank) {
+    public int getStart(int rank) {
         int chunk = calculateChunkSize();
         return rank * chunk;
     }
 
-    public int calculateEnd(int rank) {
+    public int getEnd(int rank) {
         int chunk = calculateChunkSize();
         return Math.min(capacity, (rank + 1) * chunk);
+    }
+
+    public void setSize(int capacity){
+        this.capacity = capacity;
+    }
+
+    public int getMinChunkSize(){
+        int chunk = calculateChunkSize();
+        return Math.min(capacity,size*chunk) - (size-1)*chunk;
     }
 
 

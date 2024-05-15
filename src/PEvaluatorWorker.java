@@ -1,6 +1,5 @@
 import java.util.concurrent.CyclicBarrier;
-
-class PEvaluatorWorker implements Runnable {
+public class PEvaluatorWorker implements Runnable {
     private Population p;
     private int start;
     private int end;

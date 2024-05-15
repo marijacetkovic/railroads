@@ -1,3 +1,5 @@
+import util.Config;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -14,10 +16,15 @@ public class Population {
     private PriorityQueue<Railroad> eQueue;
     private Random r;
     public static List<double[]> pData = new ArrayList<>();
+    private Railroad trivialSol;
+    private double previousMaxFitness;
+    private int genWithoutImprovement;
+
     public Population() {
         r = new Random(4);
         pSize = Config.POPULATION_SIZE;
         solutions = new ArrayList<>();
+        trivialSol = generateTrivialSol();
         initializeSolutions();
         currentGeneration = 1;
         eQueue = new PriorityQueue<Railroad>();
@@ -70,10 +77,68 @@ public class Population {
     }
 
 
+    public void initializeSolutionsEnhanced(){
+        for (int i = 0; i < pSize; i++) {
+            Railroad r = new Railroad(Main.trains,i);
+            while(hammingDistance(r.world,trivialSol.world)>(0.88*Math.pow(Config.WORLD_SIZE,2))){
+                r = new Railroad(Main.trains,i);
+            }
+            System.out.println("hamming distance "+hammingDistance(r.world,trivialSol.world));
+
+            solutions.add(r); //train coordinates should be supplied
+        }
+    }
+
+    private boolean checkStagnation(){
+        if (maxFitness==previousMaxFitness){
+            genWithoutImprovement++;
+        }
+        else{
+            genWithoutImprovement = 0;
+            previousMaxFitness = maxFitness;
+        }
+        return genWithoutImprovement>50;
+    }
+    private void tweakMutation(){
+        Config.MUTATION_RATE += Config.PEAK_MUTATION;
+    }
+    private void resetMutation(){
+        Config.MUTATION_RATE -= Config.PEAK_MUTATION;
+    }
+
     public void initializeSolutions(){
         for (int i = 0; i < pSize; i++) {
             solutions.add(new Railroad(Main.trains,i)); //train coordinates should be supplied
         }
+    }
+
+    public static Railroad generateTrivialSol(){
+        int n = Config.WORLD_SIZE;
+        int[][] matrix = new int[n][n];
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] = 11;
+                //System.out.print(matrix[i][j]+ " ");
+            }
+            //System.out.println();
+        }
+
+        Railroad r = new Railroad(Main.trains,-1);
+        r.setWorld(matrix);
+        return r;
+    }
+
+    private int hammingDistance(int[][] m1, int[][] m2) {
+        int distance = 0;
+        for (int i = 0; i < m1.length; i++) {
+            for (int j = 0; j < m1[0].length; j++) {
+                if (m1[i][j] != m2[i][j]) {
+                    distance++;
+                }
+            }
+        }
+        return distance;
     }
 
     public void printMatrix(int[][] matrix){
@@ -90,7 +155,7 @@ public class Population {
         int[][] m1 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
         int[][] m2 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
        int crossoverPoint = r.nextInt(Config.WORLD_SIZE); // select a random crossover point
-       // int crossoverPoint = Config.WORLD_SIZE/2;
+       // int crossoverPoint = util.Config.WORLD_SIZE/2;
         //printMatrix(r1.world);
         //printMatrix(r2.world);
         for (int i = 0; i <Config.WORLD_SIZE; i++) {
@@ -230,7 +295,6 @@ public class Population {
             }
             r = null;
         }
-        // This should never happen if fitness values are properly scaled and normalized
         throw new RuntimeException("Roulette wheel selection failed: no individual selected.");
     }
 

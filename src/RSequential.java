@@ -1,6 +1,8 @@
+import util.Config;
+import util.RChart;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class RSequential {
@@ -15,7 +17,7 @@ public class RSequential {
         this.bestIndividualQueue = bestIndividualQueue;
     }
     public void execute(){
-        while(p.getCurrentGeneration()<Config.NUM_GENERATIONS){
+        while(p.getCurrentGeneration()< Config.NUM_GENERATIONS){
             p.performEvaluation();
             List<Railroad> newP = new ArrayList<>(10);
             int index=0;
@@ -37,7 +39,7 @@ public class RSequential {
             //System.out.println("current gen "+p.CURRENT_GENERATION);
 
         }
-        RChart.saveChart();
+        RChart.saveChart(p.getPData());
     }
 
 }

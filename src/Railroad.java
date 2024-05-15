@@ -1,3 +1,5 @@
+import util.Config;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -5,7 +7,6 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     //represents a chromosome - collection of genes
     int N=Config.WORLD_SIZE;
     double fitness;
-    //List<int[][]> world;
     int[][] world;
     int[][] worldTransformed;
     List<int[]> trains;

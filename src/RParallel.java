@@ -1,3 +1,6 @@
+import util.Config;
+import util.WorkSplitter;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -10,6 +13,7 @@ public class RParallel {
     private CyclicBarrier barrier;
     ConcurrentLinkedQueue<List<Railroad>> results = new ConcurrentLinkedQueue<>();
     ExecutorService tp;
+    private WorkSplitter wSplitter;
 
 
     public RParallel(int numThreads, Population population, Railroad bestIndividual, BlockingQueue<Railroad> bestIndividualQueue) {
@@ -19,16 +23,17 @@ public class RParallel {
         this.bestIndividualQueue = bestIndividualQueue;
         this.barrier = new CyclicBarrier(NUM_THREADS+1);
         this.tp = Executors.newFixedThreadPool(NUM_THREADS);
+        this.wSplitter = new WorkSplitter(p.getSolutions().size(), NUM_THREADS);
     }
 
     public void execute(){
 
         while(Population.getCurrentGeneration()<Config.NUM_GENERATIONS){
             p.resetStatistics();
-            int chunk = (int) Math.ceil((double) p.getSolutions().size()/NUM_THREADS);
+            wSplitter.setSize(p.getSolutions().size());
             for (int i = 0; i < NUM_THREADS; i++) {
-                int start = i * chunk;
-                int end = Math.min(p.getSolutions().size(), (i + 1) * chunk);
+                int start = wSplitter.getStart(i);
+                int end = wSplitter.getEnd(i);
                 System.out.println("thread +"+i+"start "+start +" end "+end);
                 tp.submit(new PEvaluatorWorker(p, start, end, barrier));
             }
@@ -54,12 +59,12 @@ public class RParallel {
             }
             //building the population with leftover p size - elitism places
             int CAPACITY = p.getPSize() - Config.ELITISM_K;
-            chunk = (int) Math.ceil((double) CAPACITY/NUM_THREADS);
             System.out.println(CAPACITY+"capacity");
+            wSplitter.setSize(CAPACITY);
             results = new ConcurrentLinkedQueue<>();
             for (int i = 0; i < NUM_THREADS; i++) {
-                int start = i * chunk;
-                int end = Math.min(p.getSolutions().size(), (i + 1) * chunk);
+                int start = wSplitter.getStart(i);
+                int end = wSplitter.getEnd(i);
                 System.out.println("start "+start+" end "+end +" for thread i ");
                 tp.submit(new PBuilderWorker(p, start, end, barrier,results));
             }

@@ -1,3 +1,5 @@
+package util;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYSeries;
@@ -9,11 +11,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class RChart {
-    public static void saveChart() {
+    public static void saveChart(List<double[]> data) {
         // create data
         XYSeries maxFitness = new XYSeries("Max Fitness");
         XYSeries avgFitness = new XYSeries("Average Fitness");
-        List<double[]> data = Population.getPData();
         int gen=1;
         for (double[] d : data) {
             maxFitness.add(gen, d[0]);
