@@ -11,12 +11,15 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     int[][] worldTransformed;
     List<int[]> trains;
     int generation;
-    double numTrains;
+    int numTrains;
     double scalingFactor=1.5;
     Random random = new Random();
     private double mutationRate;
     boolean selected = false;
     int id;
+    private double scaledTilePricing;
+    private double numTrainsScaled;
+    private int countCrossroads;
 
     // list of solutions??
     public Railroad(List<int[]> trains,int id){
@@ -37,7 +40,7 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     public void setWorld(int[][] world){this.world=world;
         this.worldTransformed = Main.dict.transform(this.world);}
     public double getFitness(){return this.fitness;}
-
+    public int getNumTrains() {return this.numTrains;}
     //dfs as evaluation helper func
 
     public double DFS(int startI, int startJ, int endI, int endJ) {
@@ -45,21 +48,11 @@ public class Railroad implements Serializable, Comparable<Railroad> {
         for (int i = 0; i < visited.length; i++) {
             Arrays.fill(visited[i], false);
         }
-//        if (world[startI][startJ] != 1) {
-//            throw new RuntimeException("Invalid train start position.");
-//        }
 
         boolean found = depthFirstSearch(startI, startJ, endI, endJ, visited);
 
-        if (found) {
-            if (Population.getCurrentGeneration()==Config.NUM_GENERATIONS-1){
-                //System.out.println("found train with coordinates  " +endI +" "+endJ+"at railroad with id "+id);
-            }
-            return 1;
-        } else {
-            //System.out.println("not found");
-            return 0;
-        }
+        if (found) {return 1;}
+        else {return 0;}
 
     }
     private boolean depthFirstSearch(int i, int j, int endI, int endJ, boolean[][] visited) {
@@ -156,13 +149,39 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     public int[][] generateRandomMatrix(int size) {
         int[][] matrix = new int[size][size];
 
+        int crossroadsCount = (int) (size*size * Config.CROSSROAD_NUMBER); // % distribution
+        List<Integer> crossroadPositions = new ArrayList<>();
+
+        // Randomly place crossroads in the matrix
+        while (crossroadPositions.size() < crossroadsCount) {
+            int randomPosition = random.nextInt(crossroadsCount);
+            crossroadPositions.add(randomPosition);
+        }
+
+        // Fill the matrix
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                matrix[i][j] = random.nextInt(11)+1;
-                //System.out.print(matrix[i][j]+ " ");
+                int currentPosition = i * size + j;
+                if (crossroadPositions.contains(currentPosition)) {
+                    matrix[i][j] = 11; //(crossroads)
+                    countCrossroads++;
+                } else {
+                    matrix[i][j] = random.nextInt(10) + 1;
+                }
             }
-            //System.out.println();
         }
+
+//        for (int i = 0; i < size; i++) {
+//            for (int j = 0; j < size; j++) {
+//                matrix[i][j] = random.nextInt(11)+1;
+//                if (matrix[i][j]==11){
+//                    countCrossroads++;
+//                }
+//                //System.out.print(matrix[i][j]+ " ");
+//            }
+//            //System.out.println();
+//        }
+       // System.out.println("distribution of crossroads is "+countCrossroads/Math.pow(size,2)*100);
         return matrix;
     }
 
@@ -176,7 +195,7 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     }
 
     //mutate one railroad instance by switching a random tile
-    public void insertionMutation2(){
+    public void produceRandomIndividual(){
         for (int i = 0; i < world.length; i++) {
             for (int j = 0; j < world.length; j++) {
                     int tileKey = random.nextInt(11)+1;
@@ -219,6 +238,7 @@ public class Railroad implements Serializable, Comparable<Railroad> {
             //to transform them into binary matrix i placed them in the center of the tile, 3*i+1
             this.fitness+=DFS(3*t[0]+1,3*t[1]+1,3*t[2]+1,3*t[3]+1);
         }
+        numTrains = (int) fitness;
         return this.fitness;
     }
 
@@ -235,17 +255,22 @@ public class Railroad implements Serializable, Comparable<Railroad> {
 
 
     public double rateFitnessWithPricing() {
-        this.numTrains=0;
-        this.selected = false;
+        numTrains=0;
+        selected = false;
         for (int i = 0; i < trains.size(); i++) {
             int[] t = trains.get(i);
             //train coordinates are generated wrt tiles encoded by types
             //to transform them into binary matrix i placed them in the center of the tile, 3*i+1
-            this.numTrains+=DFS(3*t[0]+1,3*t[1]+1,3*t[2]+1,3*t[3]+1);
+            numTrains+=DFS(3*t[0]+1,3*t[1]+1,3*t[2]+1,3*t[3]+1);
         }
-        this.fitness += (getSum()/Math.pow(Config.WORLD_SIZE,2));
-        this.fitness += 100 * (Config.NUM_TRAINS - numTrains); //scaled num of trains that dont finish
-        return this.fitness;
+        scaledTilePricing = (getSum()*Config.TILE_PRICING_SF);
+        //this.numTrainsScaled = 100 * (Config.NUM_TRAINS - numTrains); //scaled num of trains that dont finish
+        numTrainsScaled = numTrains*Config.NUM_TRAINS_SF;
+        fitness = numTrainsScaled - scaledTilePricing;
+       // System.out.println("id "+id+"num trains that finish "+numTrains+" scaled to "+numTrainsScaled+" scaledTilePricing "+scaledTilePricing);
+        //System.out.println(" and final fitness is "+fitness);
+
+        return fitness;
     }
 
     @Override
@@ -259,4 +284,6 @@ public class Railroad implements Serializable, Comparable<Railroad> {
             return 0;
         }
     }
+
+
 }

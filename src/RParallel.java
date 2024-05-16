@@ -85,22 +85,11 @@ public class RParallel {
                     break;
                 }
             }
-            System.out.println(newP.size()+" size of newp");
-            try {
-                Thread.sleep(4000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-
             p.setSolutions(newP);
-
             bestIndividual = p.getBestIndividual(); //solution to represent per generation
             bestIndividualQueue.offer(bestIndividual);
             System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and generation "+Population.getCurrentGeneration() );
-
             Population.increaseCurrentGeneration();
-            //System.out.println("current gen "+p.CURRENT_GENERATION);
-
         }
     }
 

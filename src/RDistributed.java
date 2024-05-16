@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class RDistributed {
-    private int NUM_THREADS;
     private Population p;
     private Railroad bestIndividual;
     private ConcurrentLinkedQueue<Railroad> bestIndividualQueue = new ConcurrentLinkedQueue<>();
@@ -41,20 +40,10 @@ public class RDistributed {
             //perform eval on chunk of population
             List<Railroad> mySolutions = p.performEvaluationD(start,end,rank);
             System.out.println("start and end for "+start+" "+end +" "+"mySolutions length "+mySolutions.size()+" for worker "+rank);
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
             //gather the solutions
             int minChunkSize = wSplitter.getMinChunkSize();
             System.out.println("minChunksize "+minChunkSize);
-            //List<List<Railroad>> allSolutions = gatherSolutions(mySolutions, rank, size,minChunkSize);
-            //System.out.println("for process with rank "+rank+" size of allSolutions is "+allSolutions.size());
-//            Object buffer = null;
-//            if(rank==0){
-//                buffer = allSolutions.toArray();
-//            }
+
             List<List<Railroad>> allSolutions = gatherSolutions(mySolutions, rank, size, minChunkSize);
             List<Railroad>[] solutionsArray = new List[size];
             allSolutions.toArray(solutionsArray);
@@ -62,15 +51,12 @@ public class RDistributed {
             allSolutions = Arrays.asList(solutionsArray);
 
             //System.out.println("for process with rank "+rank+" size of allSolutions is "+allSolutions.size());
-
-
             List<Railroad> evaluatedSolutions = combineSolutions(allSolutions,p.getPSize());
             System.out.println("for process with rank "+rank+" size of evaluatedSolutions is "+evaluatedSolutions.size());
 
             //update local p
             p.setSolutions(evaluatedSolutions);
-            //System.out.println(p.solutions.size()+" sol size");
-            //System.out.println("Process with rank "+rank+" reached the barrier and is ready to build new population");
+
             MPI.COMM_WORLD.Barrier();
             List<Railroad> eliteP=new ArrayList<>();
             if (rank == 0){ // just root process printing stats
@@ -93,13 +79,13 @@ public class RDistributed {
             }
             //building the population with leftover p size - elitism places
             int CAPACITY = p.getPSize() - Config.ELITISM_K;
-           System.out.println(CAPACITY+"capacity"+" for worker "+rank);
+            System.out.println(CAPACITY+"capacity"+" for worker "+rank);
 
             //get chunk of population which process x will be building
             wSplitter.setSize(CAPACITY);
             start = wSplitter.getStart(rank);
             end = wSplitter.getEnd(rank);
-            System.out.println("start "+start+" end "+end +" for process "+rank);
+
             //process builds its chunk of pop
             List<Railroad> workerP = p.buildPopulation(start,end,new ArrayList<>());
 
@@ -116,7 +102,6 @@ public class RDistributed {
             Railroad[] builtPArray = builtPFlattened.toArray(new Railroad[Config.POPULATION_SIZE]);
 
             MPI.COMM_WORLD.Bcast(builtPArray, 0, Config.POPULATION_SIZE, MPI.OBJECT, 0);
-            //p.setSolutions();
             builtPFlattened = Arrays.stream(builtPArray).toList();
             System.out.println("for process with rank "+rank+" size of builtP is "+builtPFlattened.size());
             p.setSolutions(builtPFlattened);
@@ -129,27 +114,22 @@ public class RDistributed {
                 System.out.println("current gen "+p.getCurrentGeneration());
             }
             MPI.COMM_WORLD.Barrier();
-
         }
-
         MPI.Finalize();
     }
 
     static List<List<Railroad>> gatherSolutions(List<Railroad> mySolutions, int rank, int size, int minChunkSize) {
         List<List<Railroad>> allSolutions = new ArrayList<>();
-
         //if process is root
         if (rank == 0) {
             //root's sols
             allSolutions.add(mySolutions);
             // receive sols from others
             for (int i = 1; i < size; i++) {
-                //reserve an array for receiving
+                //reserve buffer array for receiving
                 Railroad[] receivedSolutions = new Railroad[mySolutions.size()];
                 MPI.COMM_WORLD.Recv(receivedSolutions, 0,mySolutions.size(), MPI.OBJECT, i, 0);
                 allSolutions.add(Arrays.asList(receivedSolutions));
-               // System.out.println("size is "+size);
-               // System.out.println("IMHERE length of allsols "+allSolutions.size());
             }
             System.out.println("IMHERE length of allsols "+allSolutions.size());
         } else {
@@ -168,13 +148,10 @@ public class RDistributed {
             int sizeToAdd = Math.min(capacity, solutions.size());
             combinedSolutions.addAll(solutions.subList(0, sizeToAdd));
             capacity -= sizeToAdd;
-            if (capacity <= 0) {
+            if (capacity <= 0) { //cut if a larger chunk is present, so capacity is not exceeded
                 break;
             }
-            System.out.println("current solutions size "+solutions.size());
         }
-
         return combinedSolutions;
     }
-
 } 

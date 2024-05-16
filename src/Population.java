@@ -19,6 +19,8 @@ public class Population {
     private Railroad trivialSol;
     private double previousMaxFitness;
     private int genWithoutImprovement;
+    private int prevNumTrains=0;
+    private int maxNumTrains=0;
 
     public Population() {
         r = new Random(4);
@@ -90,20 +92,34 @@ public class Population {
     }
 
     private boolean checkStagnation(){
-        if (maxFitness==previousMaxFitness){
+        System.out.println("maxnum trains "+maxNumTrains+" prevnum trains "+prevNumTrains);
+        if (maxNumTrains==prevNumTrains){
             genWithoutImprovement++;
         }
         else{
             genWithoutImprovement = 0;
-            previousMaxFitness = maxFitness;
+            prevNumTrains = maxNumTrains;
         }
-        return genWithoutImprovement>50;
+        boolean flag = genWithoutImprovement>Config.STAGNATION_BOUND;
+        System.out.println("gen w/o improvement "+genWithoutImprovement+" stagn bound "+Config.STAGNATION_BOUND);
+        return flag;
     }
+
+
+    public void adjustMutationRate(){
+        if (checkStagnation()==true){
+            tweakMutation();
+        }
+        else{
+            restoreMutation();
+        }
+    }
+
     private void tweakMutation(){
-        Config.MUTATION_RATE += Config.PEAK_MUTATION;
+        Config.MUTATION_RATE = Config.PEAK_MUTATION;
     }
-    private void resetMutation(){
-        Config.MUTATION_RATE -= Config.PEAK_MUTATION;
+    private void restoreMutation(){
+        Config.MUTATION_RATE = Config.DEFAULT_MUTATION;
     }
 
     public void initializeSolutions(){
@@ -182,11 +198,14 @@ public class Population {
         this.totalFitness = 0.0;
         this.maxFitness = Double.MIN_VALUE;
         this.avgFitness = 0;
+        this.maxNumTrains = Integer.MIN_VALUE;
         for (int i = 0; i < pSize; i++) {
             //double f = solutions.get(i).rateFitness();
-            double f = solutions.get(i).rateFitness();
+            Railroad r = solutions.get(i);
+            double f = r.rateFitness();
             this.totalFitness += f;
             this.maxFitness = Math.max(maxFitness, f);
+            this.maxNumTrains = Math.max(maxNumTrains,r.getNumTrains());
         }
         this.avgFitness = totalFitness/pSize;
         printPopulationStatistics();
@@ -197,19 +216,24 @@ public class Population {
         pData.add(new double[]{maxFitness, avgFitness});
     }
 
-    public void performEvaluationM() {
+    public void performEvaluationWithPricing() {
         //evaluate all solutions
         this.totalFitness = 0.0;
-        this.maxFitness = Double.MAX_VALUE;
+        this.maxFitness = Double.MIN_VALUE;
         this.avgFitness = 0;
+        this.maxNumTrains = Integer.MIN_VALUE;
+        //System.out.println(Config.TILE_PRICING_SF+" tile pricing scale factor");
         for (int i = 0; i < pSize; i++) {
             //double f = solutions.get(i).rateFitness();
-            double f = solutions.get(i).rateFitnessWithPricing();
+            Railroad r = solutions.get(i);
+            double f = r.rateFitnessWithPricing();
             this.totalFitness += f;
-            this.maxFitness = Math.min(maxFitness, f);
+            this.maxFitness = Math.max(maxFitness, f);
+            this.maxNumTrains = Math.max(maxNumTrains,r.getNumTrains());
         }
         this.avgFitness = totalFitness/pSize;
         printPopulationStatistics();
+        savePopulationStatistics();
     }
 
     public void performEvaluation2(int start, int end) {
@@ -380,7 +404,7 @@ public class Population {
             start++;
             //System.out.println(index);
         }
-        System.out.println("Thread " + Thread.currentThread() + " built solutions of size "+ newP.size());
+       // System.out.println("Thread " + Thread.currentThread() + " built solutions of size "+ newP.size());
 
         return newP;
     }

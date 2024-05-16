@@ -130,10 +130,18 @@ public class TileDictionary {
                 break;
             case 3:
             case 4:
+            case 5:
+            case 6:
                 price = 2;
                 break;
-            case 5:
+            case 7:
+            case 8:
+            case 9:
+            case 10:
                 price = 3;
+                break;
+            case 11:
+                price = 4;
                 break;
             default:
                 price = 0;

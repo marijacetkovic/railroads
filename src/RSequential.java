@@ -28,14 +28,15 @@ public class RSequential {
                 newP.add(r);
                 index++;
             }
-
+           // p.adjustMutationRate();
+            System.out.println("Mutation rate "+Config.MUTATION_RATE);
             p.buildPopulation(index, p.getSolutions().size(),newP);
             p.setSolutions(newP);
             Population.increaseCurrentGeneration();
             bestIndividual = p.getBestIndividual(); //solution to represent per generation
             bestIndividual.generation = Population.getCurrentGeneration();
             bestIndividualQueue.offer(bestIndividual);
-            System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and numttrains "+ bestIndividual.numTrains+"and generation "+Population.getCurrentGeneration() );
+            System.out.println("Best sol id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and numTrainsFinish "+ bestIndividual.numTrains+" for generation "+Population.getCurrentGeneration() );
             //System.out.println("current gen "+p.CURRENT_GENERATION);
 
         }
