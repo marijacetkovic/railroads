@@ -26,7 +26,7 @@ public class Population {
         r = new Random(4);
         pSize = Config.POPULATION_SIZE;
         solutions = new ArrayList<>();
-        trivialSol = generateTrivialSol();
+//        trivialSol = generateTrivialSol();
         initializeSolutions();
         currentGeneration = 1;
         eQueue = new PriorityQueue<Railroad>();
@@ -93,6 +93,9 @@ public class Population {
 
     private boolean checkStagnation(){
         System.out.println("maxnum trains "+maxNumTrains+" prevnum trains "+prevNumTrains);
+        if (genWithoutImprovement==10){
+            System.out.println();
+        }
         if (maxNumTrains==prevNumTrains){
             genWithoutImprovement++;
         }

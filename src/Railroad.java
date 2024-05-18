@@ -149,20 +149,20 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     public int[][] generateRandomMatrix(int size) {
         int[][] matrix = new int[size][size];
 
-        int crossroadsCount = (int) (size*size * Config.CROSSROAD_NUMBER); // % distribution
-        List<Integer> crossroadPositions = new ArrayList<>();
+        int crossroadsCount = (int) (Math.ceil(size*size * Config.CROSSROAD_NUMBER)); // % distribution
+        List<int[]> crossroadPositions = new ArrayList<>();
 
         // Randomly place crossroads in the matrix
         while (crossroadPositions.size() < crossroadsCount) {
-            int randomPosition = random.nextInt(crossroadsCount);
-            crossroadPositions.add(randomPosition);
+            int randRow = random.nextInt(size);
+            int randCol = random.nextInt(size);
+            crossroadPositions.add(new int[]{randRow,randCol});
         }
 
         // Fill the matrix
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                int currentPosition = i * size + j;
-                if (crossroadPositions.contains(currentPosition)) {
+                if (containsArray(crossroadPositions,new int[]{i,j})) {
                     matrix[i][j] = 11; //(crossroads)
                     countCrossroads++;
                 } else {
@@ -181,9 +181,19 @@ public class Railroad implements Serializable, Comparable<Railroad> {
 //            }
 //            //System.out.println();
 //        }
-       // System.out.println("distribution of crossroads is "+countCrossroads/Math.pow(size,2)*100);
+        //System.out.println("distribution of crossroads is "+countCrossroads/Math.pow(size,2)*100);
         return matrix;
     }
+
+    private boolean containsArray(List<int[]> list, int[] array) {
+        for (int[] arr : list) {
+            if (Arrays.equals(arr, array)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     //get tile
     public int getTile(int i, int j){

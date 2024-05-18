@@ -19,6 +19,7 @@ public class RSequential {
     public void execute(){
         while(p.getCurrentGeneration()< Config.NUM_GENERATIONS){
             p.performEvaluation();
+           // p.performEvaluationWithPricing();
             List<Railroad> newP = new ArrayList<>(10);
             int index=0;
             //choose the elite

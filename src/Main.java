@@ -41,11 +41,11 @@ public class Main {
             }
         });
 //        double start = System.currentTimeMillis();
-          new RSequential(p,bestIndividual,bestIndividualQueue).execute();
+          //new RSequential(p,bestIndividual,bestIndividualQueue).execute();
 //        double end = System.currentTimeMillis();
 //        System.out.println("Sequential time is "+(end-start));
 //        double start2 = System.currentTimeMillis();
-//        new RParallel(8,p,bestIndividual,bestIndividualQueue).execute();
+        new RParallel(8,p,bestIndividual,bestIndividualQueue).execute();
 //        double end2 = System.currentTimeMillis();
 //        System.out.println("Parallel time is "+(end2-start2));
 //        new RParallel(8,p,bestIndividual,bestIndividualQueue).execute();
