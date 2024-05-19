@@ -29,12 +29,11 @@ public class Gfx extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-        repaint();
-        revalidate();
+//        repaint();
+//        revalidate();
         Railroad r = null;
 
         try {
-            Thread.sleep(10);
             r = bestIndividualQueue.take();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -72,11 +71,14 @@ public class Gfx extends JPanel {
 
         drawTrains(g);
         drawGenerationLabel(g,r);
+        repaint();
+        revalidate();
     }
 
     private void drawGenerationLabel(Graphics g, Railroad r) {
         g.setColor(Color.BLACK);
-        String generationText = "Generation: " + r.generation + " individual with fitness " + r.fitness;
+        String generationText = "Generation: " + r.generation + " individual with fitness " + r.fitness + " num of trains that finish "+r.numTrains
+                + " and tile pricing "+r.tilePricing;
         Font font = new Font("SansSerif", Font.PLAIN, 20);
         g.setFont(font);
 
@@ -84,7 +86,7 @@ public class Gfx extends JPanel {
         int x = (getWidth() - labelWidth) / 2;
 
         g.setColor(getBackground());
-        g.fillRect(x, 10, labelWidth, 20);
+        g.fillRect(x, 10, labelWidth, 30);
 
         g.setColor(Color.BLACK);
         g.drawString(generationText, x, 30);

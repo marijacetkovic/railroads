@@ -108,16 +108,7 @@ public class TileDictionary {
                     }
                 }
             }
-           // System.out.println();
         }
-
-//        for (int i = 0; i < m2.length; i++) {
-//            for (int j = 0; j < m2.length; j++) {
-//             //   System.out.print(m2[i][j]+ " ");
-//            }
-//           // System.out.println();
-//        }
-
         return m2;
     }
 
@@ -148,24 +139,5 @@ public class TileDictionary {
                 break;
         }
         return price;
-    }
-
-    public static void main(String[] args) {
-        TileDictionary dictionary = new TileDictionary();
-
-        // Get and print a specific tile
-        int tileNumber = 2;
-        int[][] selectedTile = dictionary.getTile(tileNumber);
-        if (selectedTile != null) {
-            System.out.println("Tile " + tileNumber + ":");
-            for (int[] row : selectedTile) {
-                for (int value : row) {
-                    System.out.print(value + " ");
-                }
-                System.out.println();
-            }
-        } else {
-            System.out.println("Tile not found.");
-        }
     }
 }

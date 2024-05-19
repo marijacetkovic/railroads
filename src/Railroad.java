@@ -17,6 +17,8 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     private double mutationRate;
     boolean selected = false;
     int id;
+    double tilePricing;
+    double orgTilePricing;
     private double scaledTilePricing;
     private double numTrainsScaled;
     private int countCrossroads;
@@ -32,6 +34,7 @@ public class Railroad implements Serializable, Comparable<Railroad> {
 //            repairRandomTrain(10);
 //            transformBack();
 //        }
+        orgTilePricing = getSum();
     }
 
     public void setFitness(int x){
@@ -148,39 +151,44 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     //generate random railroad instance
     public int[][] generateRandomMatrix(int size) {
         int[][] matrix = new int[size][size];
+        if (Math.random()>1){
+            System.out.println("manja budalo");
+            int crossroadsCount = (int) (Math.ceil(size*size * Config.CROSSROAD_NUMBER)); // % distribution
+            List<int[]> crossroadPositions = new ArrayList<>();
 
-        int crossroadsCount = (int) (Math.ceil(size*size * Config.CROSSROAD_NUMBER)); // % distribution
-        List<int[]> crossroadPositions = new ArrayList<>();
+            // Randomly place crossroads in the matrix
+            while (crossroadPositions.size() < crossroadsCount) {
+                int randRow = random.nextInt(size);
+                int randCol = random.nextInt(size);
+                crossroadPositions.add(new int[]{randRow,randCol});
+            }
 
-        // Randomly place crossroads in the matrix
-        while (crossroadPositions.size() < crossroadsCount) {
-            int randRow = random.nextInt(size);
-            int randCol = random.nextInt(size);
-            crossroadPositions.add(new int[]{randRow,randCol});
-        }
-
-        // Fill the matrix
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (containsArray(crossroadPositions,new int[]{i,j})) {
-                    matrix[i][j] = 11; //(crossroads)
-                    countCrossroads++;
-                } else {
-                    matrix[i][j] = random.nextInt(10) + 1;
+            // Fill the matrix
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    if (containsArray(crossroadPositions,new int[]{i,j})) {
+                        matrix[i][j] = 11; //(crossroads)
+                        countCrossroads++;
+                    } else {
+                        matrix[i][j] = random.nextInt(10) + 1;
+                    }
                 }
             }
         }
+        else {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++) {
+                    matrix[i][j] = random.nextInt(11)+1;
 
-//        for (int i = 0; i < size; i++) {
-//            for (int j = 0; j < size; j++) {
-//                matrix[i][j] = random.nextInt(11)+1;
-//                if (matrix[i][j]==11){
-//                    countCrossroads++;
-//                }
-//                //System.out.print(matrix[i][j]+ " ");
-//            }
-//            //System.out.println();
-//        }
+                    //System.out.print(matrix[i][j]+ " ");
+                }
+                //System.out.println();
+            }
+        }
+
+
+
+
         //System.out.println("distribution of crossroads is "+countCrossroads/Math.pow(size,2)*100);
         return matrix;
     }
@@ -273,10 +281,11 @@ public class Railroad implements Serializable, Comparable<Railroad> {
             //to transform them into binary matrix i placed them in the center of the tile, 3*i+1
             numTrains+=DFS(3*t[0]+1,3*t[1]+1,3*t[2]+1,3*t[3]+1);
         }
-        scaledTilePricing = (getSum()*Config.TILE_PRICING_SF);
+        tilePricing = getSum();
+        scaledTilePricing = (tilePricing*Config.TILE_PRICING_SF);
         //this.numTrainsScaled = 100 * (Config.NUM_TRAINS - numTrains); //scaled num of trains that dont finish
         numTrainsScaled = numTrains*Config.NUM_TRAINS_SF;
-        fitness = numTrainsScaled - scaledTilePricing;
+        fitness = (Math.round((numTrainsScaled - scaledTilePricing)*100))/100;
        // System.out.println("id "+id+"num trains that finish "+numTrains+" scaled to "+numTrainsScaled+" scaledTilePricing "+scaledTilePricing);
         //System.out.println(" and final fitness is "+fitness);
 

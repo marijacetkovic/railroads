@@ -21,6 +21,7 @@ public class Population {
     private int genWithoutImprovement;
     private int prevNumTrains=0;
     private int maxNumTrains=0;
+    private Railroad bestSolutionFound;
 
     public Population() {
         r = new Random(4);
@@ -29,7 +30,6 @@ public class Population {
 //        trivialSol = generateTrivialSol();
         initializeSolutions();
         currentGeneration = 1;
-        eQueue = new PriorityQueue<Railroad>();
     }
 
     public static void increaseCurrentGeneration() {
@@ -213,6 +213,12 @@ public class Population {
         this.avgFitness = totalFitness/pSize;
         printPopulationStatistics();
         savePopulationStatistics();
+    }
+
+    public void updateBestSolution(Railroad r){
+        if (bestSolutionFound==null || r.fitness>bestSolutionFound.fitness){
+            bestSolutionFound=r;
+        }
     }
 
     private void savePopulationStatistics() {

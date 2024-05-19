@@ -8,25 +8,27 @@ import java.util.List;
 import java.util.concurrent.*;
 
 public class RDistributed {
-    private Population p;
-    private Railroad bestIndividual;
-    private ConcurrentLinkedQueue<Railroad> bestIndividualQueue = new ConcurrentLinkedQueue<>();
-    private WorkSplitter wSplitter;
+    private static Population p = new Population();
+    private static Railroad bestIndividual = p.getSolutions().get(0);
+    private static ConcurrentLinkedQueue<Railroad> bestIndividualQueue = new ConcurrentLinkedQueue<>();
+    private static WorkSplitter wSplitter;
 
 
-    public RDistributed(Population population, Railroad bestIndividual, BlockingQueue<Railroad> bestIndividualQueue) {
+    public RDistributed() {
         //this.NUM_THREADS = numThreads;
-        this.p = population;
-        this.bestIndividual = bestIndividual;
-
         // this.bestIndividualQueue = bestIndividualQueue;
         //this.barrier = new CyclicBarrier(NUM_THREADS+1);
     }
 
-    public void execute(String[] args){
+    public static void main(String[] args){
         MPI.Init(args);
         int rank = MPI.COMM_WORLD.Rank();
         int size = MPI.COMM_WORLD.Size();
+        double startTime = 0,endTime=0;
+        if (rank == 0){
+            startTime = System.currentTimeMillis();
+        }
+
         wSplitter = new WorkSplitter(p.getSolutions().size(), size);
 
         while(p.getCurrentGeneration()<Config.NUM_GENERATIONS){
@@ -114,6 +116,10 @@ public class RDistributed {
                 System.out.println("current gen "+p.getCurrentGeneration());
             }
             MPI.COMM_WORLD.Barrier();
+        }
+        if (rank == 0){
+            endTime = System.currentTimeMillis();
+            System.out.println("Time taken to perform the algorithm is "+(endTime-startTime));
         }
         MPI.Finalize();
     }

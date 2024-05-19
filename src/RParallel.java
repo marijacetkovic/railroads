@@ -27,7 +27,7 @@ public class RParallel {
     }
 
     public void execute(){
-
+        double startTime = System.currentTimeMillis(),endTime=0;
         while(Population.getCurrentGeneration()<Config.NUM_GENERATIONS){
             p.resetStatistics();
             wSplitter.setSize(p.getSolutions().size());
@@ -91,6 +91,8 @@ public class RParallel {
             System.out.println("best solution id "+bestIndividual.id+" with fitness "+bestIndividual.fitness+ " and generation "+Population.getCurrentGeneration() );
             Population.increaseCurrentGeneration();
         }
+        endTime = System.currentTimeMillis();
+        System.out.println("Time taken to perform the algorithm is "+(endTime-startTime));
     }
 
 }
