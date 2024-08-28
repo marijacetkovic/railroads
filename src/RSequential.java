@@ -21,8 +21,8 @@ public class RSequential {
     public void execute(){
         double startTime = System.currentTimeMillis(),endTime=0;
         while(p.getCurrentGeneration()< Config.NUM_GENERATIONS){
-           // p.performEvaluation();
-            p.performEvaluationWithPricing();
+            p.performEvaluation();
+           // p.performEvaluationWithPricing();
             List<Railroad> newP = new ArrayList<>(10);
             int index=0;
             //choose the elite
@@ -32,7 +32,7 @@ public class RSequential {
                 newP.add(r);
                 index++;
             }
-           // p.adjustMutationRate();
+            p.adjustMutationRate();
             System.out.println("Mutation rate "+Config.MUTATION_RATE);
             p.buildPopulation(index, p.getSolutions().size(),newP);
             p.setSolutions(newP);

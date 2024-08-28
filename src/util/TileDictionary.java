@@ -4,6 +4,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The TileDictionary class manages a collection of predefined tiles and their matrix representations.
+ * It provides methods to retrieve tile matrices, switch between their integer and 3x3 binary matrix representation,
+ * and obtain their prices.
+ */
 public class TileDictionary {
     private HashMap<Integer, int[][]> tileMap;
 
@@ -85,6 +90,14 @@ public class TileDictionary {
         return tileMap.get(tileNumber);
     }
 
+
+    /**
+     * Finds the tile number (integer representation) for a given matrix representation using deep equality
+     * (for content comparison, not reference).
+     *
+     * @param tile The matrix representation of the tile to search for.
+     * @return The tile number associated with the matrix, or 0 if no matching tile is found.
+     */
     public int getKey(int[][] tile) {
         for (Map.Entry<Integer, int[][]> e:tileMap.entrySet()) {
             if(Arrays.deepEquals(e.getValue(),tile)){
@@ -94,13 +107,19 @@ public class TileDictionary {
         return 0;
     }
 
+
+    /**
+     * Transforms a matrix of tile numbers into a matrix of tile representations.
+     *
+     * @param m The matrix of tile numbers to transform.
+     * @return A larger matrix where each tile number is replaced by its corresponding tile representation.
+     */
     public int[][] transform(int[][] m) {
         int n = m.length;
         int[][] m2 = new int[3 * n][3 * n];
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-               // System.out.print( m[i][j]+" ");
                 int[][] tile = tileMap.get(m[i][j]);
                 for (int x = 0; x < 3; x++) {
                     for (int y = 0; y < 3; y++) {
@@ -112,6 +131,13 @@ public class TileDictionary {
         return m2;
     }
 
+
+    /**
+     * Retrieves the price associated with a tile given its number.
+     *
+     * @param tileNumber The integer representation the tile.
+     * @return The price of the tile.
+     */
     public int getPrice(int tileNumber) {
         int price;
         switch (tileNumber) {

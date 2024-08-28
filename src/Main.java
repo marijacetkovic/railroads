@@ -51,6 +51,7 @@ public class Main {
             }
 
         });
+        runGeneticAlgorithm(mode);
 //        double start = System.currentTimeMillis();
 //        new RSequential(p,bestIndividual,bestIndividualQueue).execute();
 //        double end = System.currentTimeMillis();
@@ -64,7 +65,7 @@ public class Main {
        // new RDistributed(p,bestIndividual,bestIndividualQueue).execute(args);
     }
 
-    public void runGeneticAlgorithm(int mode){
+    public static void runGeneticAlgorithm(int mode){
         if (mode==1){
             new RSequential(p,bestIndividual,bestIndividualQueue).execute();
         }
