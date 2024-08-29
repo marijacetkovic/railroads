@@ -1,3 +1,4 @@
+import org.jfree.chart.block.Block;
 import util.Config;
 import util.TileDictionary;
 
@@ -15,7 +16,7 @@ public class Main {
 
     public static Population p = new Population();
 
-    static Railroad bestIndividual = p.getSolutions().get(0);
+    static Railroad bestIndividual;
     private static BlockingQueue<Railroad> bestIndividualQueue = new LinkedBlockingQueue<>();
     private static int mode;
 
@@ -29,6 +30,11 @@ public class Main {
         else{
             mode = Integer.parseInt(args[0]);
         }
+        renderGui(trains, bestIndividualQueue);
+        runGeneticAlgorithm(2);
+    }
+
+    public static void renderGui(List<int[]> trains, BlockingQueue<Railroad> bestIndividualQueue){
         SwingUtilities.invokeLater(() -> {
             if (Config.RENDER_GUI) {
                 Gfx gui = new Gfx(trains, bestIndividualQueue);
@@ -39,7 +45,6 @@ public class Main {
                 frame.setVisible(true);
             }
         });
-        runGeneticAlgorithm(2);
     }
 
     public static void runGeneticAlgorithm(int mode){
