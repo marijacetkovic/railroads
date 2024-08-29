@@ -15,7 +15,8 @@ public class WorkSplitter {
 
     public int getEnd(int rank) {
         int chunk = calculateChunkSize();
-        return Math.min(capacity, (rank + 1) * chunk);
+        System.out.println("End for rank "+rank+ " "+ Math.min(capacity, (rank + 1) * chunk));
+        return Math.min(capacity-1, (rank + 1) * chunk);
     }
 
     public void setSize(int capacity){
@@ -29,6 +30,7 @@ public class WorkSplitter {
 
 
     private int calculateChunkSize() {
+        System.out.println("Chunk size "+ (int) Math.ceil((double) capacity / size));
         return (int) Math.ceil((double) capacity / size);
     }
 }

@@ -20,16 +20,6 @@ public class Main {
     private static int mode;
 
     public static void main(String[] args) {
-        //List<Railroad> newP = new ArrayList<>(10);
-
-//        Railroad w = new Railroad(trains);
-//        for (int i = 0; i < 10; i++) {
-//            for (int j = 0; j <10; j++) {
-//                System.out.print(w.world[i][j]+" ");
-//            }
-//            System.out.println();
-//        }
-        //int[][] world = Main.dict.transform(w.world);
         System.out.println(args);
         if(args.length<1){
             System.out.println("Please enter preferred mode as argument.");
@@ -47,22 +37,9 @@ public class Main {
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 frame.add(gui);
                 frame.setVisible(true);
-
             }
-
         });
-        runGeneticAlgorithm(mode);
-//        double start = System.currentTimeMillis();
-//        new RSequential(p,bestIndividual,bestIndividualQueue).execute();
-//        double end = System.currentTimeMillis();
-//        System.out.println("Sequential time is "+(end-start));
-//        double start2 = System.currentTimeMillis();
-        //new RParallel(8,p,bestIndividual,bestIndividualQueue).execute();
-//        double end2 = System.currentTimeMillis();
-//        System.out.println("Parallel time is "+(end2-start2));
-//        new RParallel(8,p,bestIndividual,bestIndividualQueue).execute();
-
-       // new RDistributed(p,bestIndividual,bestIndividualQueue).execute(args);
+        runGeneticAlgorithm(2);
     }
 
     public static void runGeneticAlgorithm(int mode){

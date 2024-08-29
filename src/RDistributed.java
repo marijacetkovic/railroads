@@ -2,22 +2,22 @@ import mpi.*;
 import util.Config;
 import util.WorkSplitter;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.*;
 
 public class RDistributed {
     private static Population p = new Population();
     private static Railroad bestIndividual = p.getSolutions().get(0);
-    private static ConcurrentLinkedQueue<Railroad> bestIndividualQueue = new ConcurrentLinkedQueue<>();
+    private static BlockingQueue<Railroad> bestIndividualQueue=new LinkedBlockingDeque<>();
     private static WorkSplitter wSplitter;
+    static Random r = new Random(Config.RANDOM_SEED);
+    public static List<int[]> trains = getRandomTrains(Config.NUM_TRAINS);
 
-
-    public RDistributed() {
-        //this.NUM_THREADS = numThreads;
-        // this.bestIndividualQueue = bestIndividualQueue;
-        //this.barrier = new CyclicBarrier(NUM_THREADS+1);
+    public RDistributed(BlockingQueue<Railroad> bestIndividualQueue) {
     }
 
     public static void main(String[] args){
@@ -27,6 +27,16 @@ public class RDistributed {
         double startTime = 0,endTime=0;
         if (rank == 0){
             startTime = System.currentTimeMillis();
+            SwingUtilities.invokeLater(() -> {
+                if (Config.RENDER_GUI) {
+                    Gfx gui = new Gfx(trains, bestIndividualQueue);
+                    JFrame frame = new JFrame("Railroads");
+                    frame.setSize(1000, 1000);
+                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    frame.add(gui);
+                    frame.setVisible(true);
+                }
+            });
         }
 
         wSplitter = new WorkSplitter(p.getSolutions().size(), size);
@@ -159,5 +169,23 @@ public class RDistributed {
             }
         }
         return combinedSolutions;
+    }
+    public static List<int[]> getRandomTrains(int numT){
+        List<int[]> trains = new ArrayList<>();
+        for (int i = 0; i < numT; i++) {
+            System.out.println("TRAIN "+i);
+            trains.add(generateRandomTrain());
+        }
+        return trains;
+    }
+
+    private static int[] generateRandomTrain(){
+        int[] train = new int[4];
+        for (int i = 0; i < 4; i++) {
+            train[i]=r.nextInt(0,Config.WORLD_SIZE);
+            System.out.print(train[i]+" ");
+        }
+        System.out.println();
+        return train;
     }
 } 

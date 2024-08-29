@@ -163,9 +163,9 @@ public class Population {
     public void printMatrix(int[][] matrix){
         for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[i].length; j++) {
-                //System.out.print(matrix[i][j] + " ");
+                System.out.print(matrix[i][j] + " ");
             }
-          //  System.out.println();
+            System.out.println();
         }
     }
 
@@ -246,10 +246,11 @@ public class Population {
     }
 
     public void performEvaluation2(int start, int end) {
-        System.out.println("Thread " + Thread.currentThread().getName() + " evaluating solutions from " + start + " to " + (end - 1));
+        System.out.println("Thread " + Thread.currentThread().getName() + " evaluating solutions from " + start + " to " + (end));
         //evaluate all solutions
         for (int i = start; i < end; i++) {
             double f = solutions.get(i).rateFitness();
+            //System.out.println(solutions.get(161) +"manjaaaa");
             //updateStatistics(f);
         }
     }
@@ -274,8 +275,10 @@ public class Population {
     }
     public void updateAllStatistics(){
         for ( Railroad r: solutions) {
-            this.totalFitness += r.fitness;
-            this.maxFitness = Math.max(maxFitness, r.fitness);
+            if(r!=null) {
+                this.totalFitness += r.fitness;
+                this.maxFitness = Math.max(maxFitness, r.fitness);
+            }
         }
     }
     //collect statistics?????
@@ -371,17 +374,17 @@ public class Population {
         }
     }
 
-    public void mutate(int mutationType, Railroad r){
-        switch (mutationType) {
-            case Config.INSERTION_MUTATION:
-                r.insertionMutation();
-                break;
-            case Config.OTHER_MUTATION:
-                break;
-            default:
-                System.out.println("invalid mutation type");
-        }
-    }
+//    public void mutate(int mutationType, Railroad r){
+//        switch (mutationType) {
+//            case Config.INSERTION_MUTATION:
+//                r.insertionMutation();
+//                break;
+//            case Config.OTHER_MUTATION:
+//                break;
+//            default:
+//                System.out.println("invalid mutation type");
+//        }
+//    }
 
 //    public void sortPopulation(){
 //        //used for truncation selection
@@ -397,8 +400,8 @@ public class Population {
             if(Math.random()<Config.CROSSOVER_RATE){
                 this.crossover(Config.SINGLE_POINT_CROSSOVER,r1,r2);
             }
-            this.mutate(Config.INSERTION_MUTATION,r1);
-            this.mutate(Config.INSERTION_MUTATION,r2);
+            GA.mutate(Config.INSERTION_MUTATION,r1);
+            GA.mutate(Config.INSERTION_MUTATION,r2);
 
             //add to new pop
             //if(p.CURRENT_GENERATION == 10){
