@@ -130,6 +130,11 @@ public class Population {
             solutions.add(new Railroad(Main.trains,i)); //train coordinates should be supplied
         }
     }
+    public void initializeSolutionsD(){
+        for (int i = 0; i < pSize; i++) {
+            solutions.add(new Railroad(RDistributed.trains,i)); //train coordinates should be supplied
+        }
+    }
 
     public static Railroad generateTrivialSol(){
         int n = Config.WORLD_SIZE;
@@ -261,9 +266,10 @@ public class Population {
         //evaluate all solutions
         for (int i = start; i < end; i++) {
             Railroad r = solutions.get(i);
-            r.rateFitness();
-            mySolutions.add(r);
-            //System.out.println("i am process "+rank+"amd i evaluated index "+i);
+            if(r!=null) {
+                r.rateFitness();
+                mySolutions.add(r);
+            }//System.out.println("i am process "+rank+"amd i evaluated index "+i);
         }
         return mySolutions;
     }
@@ -441,7 +447,8 @@ public class Population {
         int index = 0;
         for (int i = 0; i < pSize; i++) {
             Railroad r = solutions.get(i);
-            if(r.fitness>bestScore&&!r.selected){
+           // System.out.println("koj go prai problem dali sum jas toj "+i);
+            if(r!=null&&r.fitness>bestScore&&!r.selected){
                 bestScore = r.fitness;
                 index = i;
             }
@@ -456,7 +463,7 @@ public class Population {
         int index = 0;
         for (int i = 0; i < pSize; i++) {
             Railroad r = solutions.get(i);
-            if(r.fitness>bestScore){
+            if(r!=null&&r.fitness>bestScore){
                 bestScore = r.fitness;
                 index = i;
             }

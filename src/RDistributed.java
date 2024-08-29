@@ -1,4 +1,5 @@
 import mpi.*;
+import org.jfree.chart.block.Block;
 import util.Config;
 import util.WorkSplitter;
 
@@ -6,18 +7,18 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.*;
 
 public class RDistributed {
     private static Population p = new Population();
-    private static Railroad bestIndividual = p.getSolutions().get(0);
-    private static BlockingQueue<Railroad> bestIndividualQueue=new LinkedBlockingDeque<>();
-    private static WorkSplitter wSplitter;
-    static Random r = new Random(Config.RANDOM_SEED);
-    public static List<int[]> trains = getRandomTrains(Config.NUM_TRAINS);
+    private static Railroad bestIndividual;
+    public static List<int[]> trains = Main.getRandomTrains(Config.NUM_TRAINS);
 
-    public RDistributed(BlockingQueue<Railroad> bestIndividualQueue) {
+    private static BlockingQueue<Railroad> bestIndividualQueue = new LinkedBlockingQueue<>();
+    private static WorkSplitter wSplitter;
+
+
+    public RDistributed() {
     }
 
     public static void main(String[] args){
@@ -25,8 +26,21 @@ public class RDistributed {
         int rank = MPI.COMM_WORLD.Rank();
         int size = MPI.COMM_WORLD.Size();
         double startTime = 0,endTime=0;
-        if (rank == 0){
+        if (rank == 0) {
             startTime = System.currentTimeMillis();
+
+            // Initialize the population on the root process
+            p.initializeSolutionsD();
+
+            // Convert the initial population list to an array
+            Railroad[] pArray = p.getSolutions().toArray(new Railroad[0]);
+
+            // Broadcast the population array to all processes
+            MPI.COMM_WORLD.Bcast(pArray, 0, Config.POPULATION_SIZE, MPI.OBJECT, 0);
+
+            // Set the best individual on the root process
+            bestIndividual = p.getSolutions().get(0);
+
             SwingUtilities.invokeLater(() -> {
                 if (Config.RENDER_GUI) {
                     Gfx gui = new Gfx(trains, bestIndividualQueue);
@@ -37,7 +51,21 @@ public class RDistributed {
                     frame.setVisible(true);
                 }
             });
+        } else {
+            // If not the root process, prepare to receive the population array
+            Railroad[] pArray = new Railroad[Config.POPULATION_SIZE];
+
+            // Receive the broadcasted population array
+            MPI.COMM_WORLD.Bcast(pArray, 0,  Config.POPULATION_SIZE, MPI.OBJECT, 0);
+
+            // Convert the received array back to a list and set it as the solutions in the population
+            p.setSolutions(Arrays.asList(pArray));
+
+            // Set the best individual on non-root processes as well
+            bestIndividual = p.getSolutions().get(0);
         }
+
+        MPI.COMM_WORLD.Barrier();
 
         wSplitter = new WorkSplitter(p.getSolutions().size(), size);
 
@@ -45,6 +73,8 @@ public class RDistributed {
             p.resetStatistics();
             //get its own chunk of population
             wSplitter.setSize(p.getSolutions().size());
+            System.out.println("i am worker "+rank);
+           // System.out.println("WSPLITTER" + wSplitter.capacity);
             int start = wSplitter.getStart(rank);
             int end = wSplitter.getEnd(rank);
             System.out.println("for process "+rank+" start is "+start+" and end is "+end);
@@ -74,7 +104,7 @@ public class RDistributed {
             if (rank == 0){ // just root process printing stats
                 System.out.println(p.getSolutions().size()+" sol size");
                 for (Railroad r: p.getSolutions()) {
-                //    System.out.println(r);
+                    //    System.out.println(r);
                 }
                 p.updateAllStatistics();
                 p.printPopulationStatistics();
@@ -91,6 +121,7 @@ public class RDistributed {
             }
             //building the population with leftover p size - elitism places
             int CAPACITY = p.getPSize() - Config.ELITISM_K;
+
             System.out.println(CAPACITY+"capacity"+" for worker "+rank);
 
             //get chunk of population which process x will be building
@@ -99,6 +130,8 @@ public class RDistributed {
             end = wSplitter.getEnd(rank);
 
             //process builds its chunk of pop
+            System.out.println("for process with rank "+rank+" size of p is "+p.getSolutions().size());
+
             List<Railroad> workerP = p.buildPopulation(start,end,new ArrayList<>());
 
             System.out.println("workerP length "+workerP.size()+" for worker "+rank);
@@ -169,23 +202,5 @@ public class RDistributed {
             }
         }
         return combinedSolutions;
-    }
-    public static List<int[]> getRandomTrains(int numT){
-        List<int[]> trains = new ArrayList<>();
-        for (int i = 0; i < numT; i++) {
-            System.out.println("TRAIN "+i);
-            trains.add(generateRandomTrain());
-        }
-        return trains;
-    }
-
-    private static int[] generateRandomTrain(){
-        int[] train = new int[4];
-        for (int i = 0; i < 4; i++) {
-            train[i]=r.nextInt(0,Config.WORLD_SIZE);
-            System.out.print(train[i]+" ");
-        }
-        System.out.println();
-        return train;
     }
 } 

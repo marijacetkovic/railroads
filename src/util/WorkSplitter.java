@@ -1,7 +1,7 @@
 package util;
 
 public class WorkSplitter {
-    private int capacity;
+    public int capacity;
     private final int size;
     public WorkSplitter(int capacity, int size) {
         this.capacity = capacity;
@@ -10,12 +10,15 @@ public class WorkSplitter {
 
     public int getStart(int rank) {
         int chunk = calculateChunkSize();
+        System.out.println("chunk size is for start"+chunk);
         return rank * chunk;
     }
 
     public int getEnd(int rank) {
         int chunk = calculateChunkSize();
-        System.out.println("End for rank "+rank+ " "+ Math.min(capacity, (rank + 1) * chunk));
+        //System.out.println("End for rank "+rank+ " "+ Math.min(capacity, (rank + 1) * chunk));
+        System.out.println("chunk size is for end"+chunk);
+
         return Math.min(capacity-1, (rank + 1) * chunk);
     }
 
@@ -30,7 +33,9 @@ public class WorkSplitter {
 
 
     private int calculateChunkSize() {
-        System.out.println("Chunk size "+ (int) Math.ceil((double) capacity / size));
+        System.out.println("size "+size);
+        System.out.println("capacity pop size "+capacity);
+        System.out.println("chunkic "+ (int) Math.ceil((double) capacity / size));
         return (int) Math.ceil((double) capacity / size);
     }
 }
