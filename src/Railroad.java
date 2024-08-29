@@ -15,7 +15,6 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     int generation;
     int numTrains;
     double scalingFactor=1.5;
-    Random random = new Random();
     private double mutationRate;
     boolean selected = false;
     int id;
@@ -54,16 +53,6 @@ public class Railroad implements Serializable, Comparable<Railroad> {
         this.world[i][j]=tileKey;
     }
 
-    //mutate one railroad instance by switching a random tile
-    public void produceRandomIndividual(){
-        for (int i = 0; i < world.length; i++) {
-            for (int j = 0; j < world.length; j++) {
-                    int tileKey = random.nextInt(11)+1;
-                    setTile(i,j,tileKey);
-            }
-        }
-    }
-
     //returns sum of all tile costs
     private int getSum() {
         return Arrays.stream(world)
@@ -81,6 +70,7 @@ public class Railroad implements Serializable, Comparable<Railroad> {
             //to transform them into binary matrix i placed them in the center of the tile, 3*i+1
             this.fitness += PathFinder.findPath(worldTransformed,3*t[0]+1,3*t[1]+1,3*t[2]+1,3*t[3]+1);
         }
+        tilePricing = getSum();
         this.numTrains = (int) this.fitness;
         return fitness;
     }

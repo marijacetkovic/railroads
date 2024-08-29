@@ -17,6 +17,7 @@ public class RSequential {
 
     public void execute() {
         long startTime = System.currentTimeMillis();
+        population.initializeSolutions();
         while (population.getCurrentGeneration() < Config.NUM_GENERATIONS) {
             GA.performEvaluation(population);
             List<Railroad> newPopulation = GA.selectElite(population);
@@ -29,16 +30,5 @@ public class RSequential {
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken to perform the algorithm: " + (endTime - startTime) + " ms");
         RChart.saveChart(population.getPData());
-    }
-
-
-
-    public void printMatrix(int[][] matrix) {
-        for (int[] row : matrix) {
-            for (int value : row) {
-                System.out.print(value + " ");
-            }
-            System.out.println();
-        }
     }
 }

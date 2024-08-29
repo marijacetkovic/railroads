@@ -14,7 +14,6 @@ public class Population {
     private double avgFitness;
     private static int tsIndex = -1;
     private PriorityQueue<Railroad> eQueue;
-    private Random r;
     public static List<double[]> pData = new ArrayList<>();
     private Railroad trivialSol;
     private double previousMaxFitness;
@@ -24,7 +23,6 @@ public class Population {
     private Railroad bestSolutionFound;
 
     public Population() {
-        r = new Random(4);
         pSize = Config.POPULATION_SIZE;
         solutions = new ArrayList<>();
 //        trivialSol = generateTrivialSol();
@@ -164,31 +162,7 @@ public class Population {
     }
 
 
-    public void singlePointCrossover(Railroad r1, Railroad r2) {
-        int[][] m1 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
-        int[][] m2 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
-        int crossoverPoint = r.nextInt(Config.WORLD_SIZE); // select a random crossover point
-        // int crossoverPoint = util.Config.WORLD_SIZE/2;
-        //printMatrix(r1.world);
-        //printMatrix(r2.world);
-        for (int i = 0; i < Config.WORLD_SIZE; i++) {
-            for (int j = 0; j < Config.WORLD_SIZE; j++) {
-                if (j < crossoverPoint) {
-                    m1[i][j] = r1.world[i][j];
-                    m2[i][j] = r2.world[i][j];
-                } else {
-                    m1[i][j] = r2.world[i][j];
-                    m2[i][j] = r1.world[i][j];
-                }
-            }
-        }
-        //printMatrix(c1);
-        //printMatrix(c2);
 
-        //System.out.println("CROSSING OVER individual " + r1.id + " and individual " + r2.id);
-        r1.setWorld(m1);
-        r2.setWorld(m2);
-    }
 
     public void performEvaluation() {
         //evaluate all solutions
@@ -240,7 +214,7 @@ public class Population {
     }
 
     public void performEvaluation2(int start, int end) {
-        System.out.println("Thread " + Thread.currentThread().getName() + " evaluating solutions from " + start + " to " + (end));
+        //System.out.println("Thread " + Thread.currentThread().getName() + " evaluating solutions from " + start + " to " + (end));
         //evaluate all solutions
         for (int i = start; i < end; i++) {
             double f = solutions.get(i).rateFitness();
@@ -250,12 +224,13 @@ public class Population {
     }
 
     public List<Railroad> performEvaluationD(int start, int end, int rank) {
-        //System.out.println("Thread " + Thread.currentThread() + " evaluating solutions from " + start + " to " + (end - 1));
+        System.out.println("Thread " + Thread.currentThread() + " evaluating solutions from " + start + " to " + (end - 1));
         List<Railroad> mySolutions = new ArrayList<>();
+        System.out.println("sol size "+solutions.size());
         //evaluate all solutions
         for (int i = start; i < end; i++) {
-            Railroad r = solutions.get(i);
-            if (r != null) {
+            if (!solutions.isEmpty()&&solutions.get(i)!=null) {
+                Railroad r = solutions.get(i);
                 r.rateFitness();
                 mySolutions.add(r);
             }//System.out.println("i am process "+rank+"amd i evaluated index "+i);
@@ -297,11 +272,12 @@ public class Population {
         double rand = Math.random() * this.totalFitness; //rnd nr between 0 and total fitness of the population
         int index = 0;
         for (int i = 0; i < pSize; i++) {
-
-            rand -= solutions.get(i).getFitness();
-            if (rand < 0) {
-                index = i;
-                break;
+            if(solutions.get(i)!=null) {
+                rand -= solutions.get(i).getFitness();
+                if (rand < 0) {
+                    index = i;
+                    break;
+                }
             }
         }
         // index = r.nextInt(pSize);
@@ -361,18 +337,6 @@ public class Population {
         return r;
     }
 
-    public void crossover(int crossoverType, Railroad r1, Railroad r2) {
-        switch (crossoverType) {
-            case Config.SINGLE_POINT_CROSSOVER:
-                singlePointCrossover(r1, r2);
-                break;
-            case Config.OTHER_CROSSOVER:
-                break;
-            default:
-                System.out.println("invalid crossover type");
-
-        }
-    }
 
 //    public void mutate(int mutationType, Railroad r){
 //        switch (mutationType) {
@@ -398,7 +362,7 @@ public class Population {
             Railroad r2 = this.select(Config.ROULETTE_WHEEL_SELECTION);
             //crossover
             if (Math.random() < Config.CROSSOVER_RATE) {
-                this.crossover(Config.SINGLE_POINT_CROSSOVER, r1, r2);
+                GA.crossover(Config.SINGLE_POINT_CROSSOVER, r1, r2);
             }
             GA.mutate(Config.INSERTION_MUTATION, r1);
             GA.mutate(Config.INSERTION_MUTATION, r2);

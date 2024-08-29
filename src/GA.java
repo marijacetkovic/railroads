@@ -43,6 +43,40 @@ public class GA {
                 " for generation: " + Population.getCurrentGeneration());
     }
 
+    public static void crossover(int crossoverType, Railroad r1, Railroad r2) {
+        switch (crossoverType) {
+            case Config.SINGLE_POINT_CROSSOVER:
+                singlePointCrossover(r1, r2);
+                break;
+            case Config.OTHER_CROSSOVER:
+                break;
+            default:
+                System.out.println("invalid crossover type");
+
+        }
+    }
+    private static void singlePointCrossover(Railroad r1, Railroad r2) {
+        int[][] m1 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
+        int[][] m2 = new int[Config.WORLD_SIZE][Config.WORLD_SIZE];
+        int crossoverPoint = random.nextInt(Config.WORLD_SIZE); // select a random crossover point
+
+        for (int i = 0; i < Config.WORLD_SIZE; i++) {
+            for (int j = 0; j < Config.WORLD_SIZE; j++) {
+                if (j < crossoverPoint) {
+                    m1[i][j] = r1.world[i][j];
+                    m2[i][j] = r2.world[i][j];
+                } else {
+                    m1[i][j] = r2.world[i][j];
+                    m2[i][j] = r1.world[i][j];
+                }
+            }
+        }
+
+        r1.setWorld(m1);
+        r2.setWorld(m2);
+    }
+
+
     public static void insertionMutation(Railroad railroad) {
         int[][] world = railroad.getWorld();
         for (int i = 0; i < world.length; i++) {

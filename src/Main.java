@@ -1,6 +1,7 @@
 import org.jfree.chart.block.Block;
 import util.Config;
 import util.TileDictionary;
+import util.TrainGenerator;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Main {
     public static TileDictionary dict = new TileDictionary();
     static Random r = new Random(Config.RANDOM_SEED);
-    public static List<int[]> trains = getRandomTrains(Config.NUM_TRAINS);
+    public static List<int[]> trains = TrainGenerator.getRandomTrains(Config.NUM_TRAINS);
 
     public static Population p = new Population();
 
@@ -34,6 +35,15 @@ public class Main {
         runGeneticAlgorithm(2);
     }
 
+    public static void runGeneticAlgorithm(int mode){
+        if (mode==1){
+            new RSequential(p,bestIndividual,bestIndividualQueue).execute();
+        }
+        else if (mode==2){
+            new RParallel(Runtime.getRuntime().availableProcessors(), p,bestIndividual,bestIndividualQueue).execute();
+        }
+    }
+
     public static void renderGui(List<int[]> trains, BlockingQueue<Railroad> bestIndividualQueue){
         SwingUtilities.invokeLater(() -> {
             if (Config.RENDER_GUI) {
@@ -46,32 +56,4 @@ public class Main {
             }
         });
     }
-
-    public static void runGeneticAlgorithm(int mode){
-        if (mode==1){
-            new RSequential(p,bestIndividual,bestIndividualQueue).execute();
-        }
-        else if (mode==2){
-            new RParallel(Runtime.getRuntime().availableProcessors(), p,bestIndividual,bestIndividualQueue).execute();
-        }
-    }
-    public static List<int[]> getRandomTrains(int numT){
-        List<int[]> trains = new ArrayList<>();
-        for (int i = 0; i < numT; i++) {
-            System.out.println("TRAIN "+i);
-            trains.add(generateRandomTrain());
-        }
-        return trains;
-    }
-
-    private static int[] generateRandomTrain(){
-        int[] train = new int[4];
-        for (int i = 0; i < 4; i++) {
-            train[i]=r.nextInt(0,Config.WORLD_SIZE);
-            System.out.print(train[i]+" ");
-        }
-        System.out.println();
-        return train;
-    }
-
 }

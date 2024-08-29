@@ -28,6 +28,7 @@ public class RParallel {
 
     public void execute() {
         long startTime = System.currentTimeMillis();
+        population.initializeSolutions();
         while (Population.getCurrentGeneration() < Config.NUM_GENERATIONS) {
             runGeneration();
             Population.increaseCurrentGeneration();

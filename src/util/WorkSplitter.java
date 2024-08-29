@@ -27,8 +27,6 @@ public class WorkSplitter {
 
     public int getMinChunkSize(){
         int chunk = calculateChunkSize();
-        System.out.println("in minchunksize size"+ size);
-        System.out.println("capacity "+capacity);
         return Math.min(capacity,size*chunk) - (size-1)*chunk;
     }
 
