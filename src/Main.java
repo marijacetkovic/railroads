@@ -13,13 +13,15 @@ public class Main {
     public static TileDictionary dict = new TileDictionary();
     public static List<int[]> trains = TrainGenerator.getRandomTrains(Config.NUM_TRAINS);
 
-    public static Population p = new Population();
+    public static Population p;
 
     static Railroad bestIndividual;
-    private static BlockingQueue<Railroad> bestIndividualQueue = new LinkedBlockingQueue<>();
+    private static BlockingQueue<Railroad> bestIndividualQueue;
     private static int mode;
 
     public static void main(String[] args) {
+        p=new Population();
+        bestIndividualQueue=new LinkedBlockingQueue<>();
         System.out.println(args);
         if(args.length<1){
             System.out.println("Please enter preferred mode as argument.");

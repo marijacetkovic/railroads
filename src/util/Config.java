@@ -14,7 +14,7 @@ public class Config {
     public final static int ELITISM_K = (int)(0.01*POPULATION_SIZE);
     public static final int CANVAS_SIZE = 800;
     public static final int RANDOM_SEED = 3;
-    public static final boolean RENDER_GUI = true;
+    public static final boolean RENDER_GUI = false;
     public static final double NUM_TRAINS_SF = 10000.0;
     public static final double TILE_PRICING_SF = 500/WORLD_SIZE;
 

@@ -8,7 +8,6 @@ import java.util.concurrent.BlockingQueue;
 public class Gfx extends JPanel {
     public List<int[]> trains;
     public int N;
-    Population p = Main.p;
     public static int canvasSize;
     int circleDiameter;
     int offsetCentre;
@@ -29,8 +28,7 @@ public class Gfx extends JPanel {
 
     @Override
     protected void paintComponent(Graphics g) {
-//        repaint();
-//        revalidate();
+
         Railroad r = null;
 
         try {

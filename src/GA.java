@@ -166,5 +166,9 @@ public class GA {
         Config.MUTATION_RATE = Config.DEFAULT_MUTATION;
     }
 
-
+    public static void updatePopulationData(Population population){
+        population.updateAllStatistics();
+        population.printPopulationStatistics();
+        population.savePopulationStatistics();
+    }
 }

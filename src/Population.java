@@ -40,6 +40,9 @@ public class Population {
         return solutions;
     }
 
+    public Railroad getSolution(int i) {
+        return solutions.get(i);
+    }
     public int getPSize() {
         return pSize;
     }
@@ -83,12 +86,10 @@ public class Population {
     }
 
     public void initializeSolutionsD() {
-        System.out.println("pSize"+pSize);
         for (int i = 0; i < pSize; i++) {
-
-            solutions.add(new Railroad(RDistributed.trains, i)); //train coordinates should be supplied
+            Railroad r = new Railroad(RDistributed.trains, i);
+            solutions.add(r); //train coordinates should be supplied
         }
-        System.out.println("turci sadhasd"+ solutions.size());
     }
 
     public void performEvaluation() {
@@ -116,7 +117,7 @@ public class Population {
         }
     }
 
-    private void savePopulationStatistics() {
+    public void savePopulationStatistics() {
         pData.add(new double[]{maxFitness, avgFitness});
     }
 
@@ -138,7 +139,7 @@ public class Population {
         savePopulationStatistics();
     }
 
-    public void performEvaluation2(int start, int end) {
+    public void performEvaluationP(int start, int end) {
         //System.out.println("Thread " + Thread.currentThread().getName() + " evaluating solutions from " + start + " to " + (end));
         //evaluate all solutions
         for (int i = start; i < end; i++) {
@@ -148,18 +149,16 @@ public class Population {
         }
     }
 
-    public List<Railroad> performEvaluationD(int start, int end, int rank) {
-        System.out.println("Thread " + Thread.currentThread() + " evaluating solutions from " + start + " to " + (end - 1));
+    public List<Railroad> performEvaluationD(int start, int end, Population p, int rank) {
+        //System.out.println("Thread " + Thread.currentThread() + " evaluating solutions from " + start + " to " + (end - 1));
         List<Railroad> mySolutions = new ArrayList<>();
-        System.out.println("sol size "+solutions.size());
         //evaluate all solutions
         for (int i = start; i < end; i++) {
-            if (!solutions.isEmpty()&&solutions.get(i)!=null) {
-                Railroad r = solutions.get(i);
-                r.rateFitness();
-                mySolutions.add(r);
-            }
+            Railroad r = p.getSolution(i);
+            r.rateFitnessWithPricing();
+            mySolutions.add(r);
         }
+
         return mySolutions;
     }
 

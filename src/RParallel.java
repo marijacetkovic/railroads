@@ -1,4 +1,5 @@
 import util.Config;
+import util.RChart;
 import util.WorkSplitter;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ public class RParallel {
         while (Population.getCurrentGeneration() < Config.NUM_GENERATIONS) {
             runGeneration();
             Population.increaseCurrentGeneration();
+            RChart.saveChart(population.getPData());
         }
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken to perform the parallel run: " + (endTime - startTime) + " ms");
@@ -41,8 +43,7 @@ public class RParallel {
         population.resetStatistics();
         evaluateInParallel();
         GA.adjustMutationRate(population);
-        population.updateAllStatistics();
-        population.printPopulationStatistics();
+        GA.updatePopulationData(population);
         List<Railroad> newPopulation = GA.selectElite(population);
         buildInParallel(newPopulation);
         GA.updateBestIndividual(population, bestIndividualQueue);

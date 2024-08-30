@@ -19,7 +19,7 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     int[][] worldTransformed;
     List<int[]> trains;
     int generation;
-    int numTrains;
+    int numTrains=0;
     double scalingFactor=1.5;
     private double mutationRate;
     boolean selected = false;
@@ -33,7 +33,6 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     public Railroad(List<int[]> trains,int id){
         this.trains = trains;
         this.id = id;
-        //this.N = N;
         this.world = GA.generateRandomIndividual(N);
         this.worldTransformed = Main.dict.transform(this.world);
         orgTilePricing = getSum();

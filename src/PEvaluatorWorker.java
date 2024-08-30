@@ -11,7 +11,7 @@ public class PEvaluatorWorker implements Runnable {
 
     @Override
     public void run() {
-        p.performEvaluation2(start, end);
+        p.performEvaluationP(start, end);
         RParallel.awaitBarrier();
     }
 }
