@@ -2,11 +2,17 @@ import util.Config;
 import util.PathFinder;
 
 import java.io.Serializable;
-import java.nio.file.Path;
 import java.util.*;
 
+/**
+ * The {@code Railroad} class represents an individual solution in this genetic algorithm
+ * for optimizing train routes on a grid. Each instance consists of a world configuration,
+ * a set of trains, and methods to evaluate the fitness of the configuration based on
+ * train path success and/or tile costs.
+ */
+
+
 public class Railroad implements Serializable, Comparable<Railroad> {
-    //represents a chromosome - collection of genes
     int N=Config.WORLD_SIZE;
     double fitness;
     int[][] world;
@@ -22,7 +28,6 @@ public class Railroad implements Serializable, Comparable<Railroad> {
     double orgTilePricing;
     private double scaledTilePricing;
     private double numTrainsScaled;
-    private int countCrossroads;
 
     // list of solutions??
     public Railroad(List<int[]> trains,int id){
@@ -85,11 +90,8 @@ public class Railroad implements Serializable, Comparable<Railroad> {
         }
         tilePricing = getSum();
         scaledTilePricing = (tilePricing*Config.TILE_PRICING_SF);
-        //this.numTrainsScaled = 100 * (Config.NUM_TRAINS - numTrains); //scaled num of trains that dont finish
         numTrainsScaled = numTrains*Config.NUM_TRAINS_SF;
         fitness = (Math.round((numTrainsScaled - scaledTilePricing)*100))/100;
-       // System.out.println("id "+id+"num trains that finish "+numTrains+" scaled to "+numTrainsScaled+" scaledTilePricing "+scaledTilePricing);
-        //System.out.println(" and final fitness is "+fitness);
         return fitness;
     }
 

@@ -22,7 +22,6 @@ public class PBuilderWorker implements Runnable {
         // Process each solution in the chunk
         p.buildPopulation(start,end,workerP);
         results.add(workerP);
-        //System.out.println(Thread.currentThread().getName()+ " has built size "+workerP.size());
         RParallel.awaitBarrier();
     }
 

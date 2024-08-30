@@ -86,7 +86,7 @@ public class Gfx extends JPanel {
         int x = (getWidth() - labelWidth) / 2;
 
         g.setColor(getBackground());
-        g.fillRect(x, 10, labelWidth, 30);
+        g.fillRect(x, 10, (int) (1.5*labelWidth), 30);
 
         g.setColor(Color.BLACK);
         g.drawString(generationText, x, 30);

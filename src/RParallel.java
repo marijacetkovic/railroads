@@ -40,6 +40,7 @@ public class RParallel {
     private void runGeneration() {
         population.resetStatistics();
         evaluateInParallel();
+        GA.adjustMutationRate(population);
         population.updateAllStatistics();
         population.printPopulationStatistics();
         List<Railroad> newPopulation = GA.selectElite(population);

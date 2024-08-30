@@ -3,7 +3,11 @@ import util.Config;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Random;
+
+/**
+ * The {@code Population} class manages a collection of {@link Railroad} instances,
+ * representing potential solutions in a genetic algorithm.
+ */
 
 public class Population {
     private static List<Railroad> solutions;
@@ -25,8 +29,6 @@ public class Population {
     public Population() {
         pSize = Config.POPULATION_SIZE;
         solutions = new ArrayList<>();
-//        trivialSol = generateTrivialSol();
-        //initializeSolutions();
         currentGeneration = 1;
     }
 
@@ -74,40 +76,6 @@ public class Population {
         return pData;
     }
 
-
-    private boolean checkStagnation() {
-        System.out.println("maxnum trains " + maxNumTrains + " prevnum trains " + prevNumTrains);
-        if (genWithoutImprovement == 10) {
-            System.out.println();
-        }
-        if (maxNumTrains == prevNumTrains) {
-            genWithoutImprovement++;
-        } else {
-            genWithoutImprovement = 0;
-            prevNumTrains = maxNumTrains;
-        }
-        boolean flag = genWithoutImprovement > Config.STAGNATION_BOUND;
-        System.out.println("gen w/o improvement " + genWithoutImprovement + " stagn bound " + Config.STAGNATION_BOUND);
-        return flag;
-    }
-
-
-    public void adjustMutationRate() {
-        if (checkStagnation() == true) {
-            tweakMutation();
-        } else {
-            restoreMutation();
-        }
-    }
-
-    private void tweakMutation() {
-        Config.MUTATION_RATE = Config.PEAK_MUTATION;
-    }
-
-    private void restoreMutation() {
-        Config.MUTATION_RATE = Config.DEFAULT_MUTATION;
-    }
-
     public void initializeSolutions() {
         for (int i = 0; i < pSize; i++) {
             solutions.add(new Railroad(Main.trains, i)); //train coordinates should be supplied
@@ -122,47 +90,6 @@ public class Population {
         }
         System.out.println("turci sadhasd"+ solutions.size());
     }
-
-    public static Railroad generateTrivialSol() {
-        int n = Config.WORLD_SIZE;
-        int[][] matrix = new int[n][n];
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                matrix[i][j] = 11;
-                //System.out.print(matrix[i][j]+ " ");
-            }
-            //System.out.println();
-        }
-
-        Railroad r = new Railroad(Main.trains, -1);
-        r.setWorld(matrix);
-        return r;
-    }
-
-    private int hammingDistance(int[][] m1, int[][] m2) {
-        int distance = 0;
-        for (int i = 0; i < m1.length; i++) {
-            for (int j = 0; j < m1[0].length; j++) {
-                if (m1[i][j] != m2[i][j]) {
-                    distance++;
-                }
-            }
-        }
-        return distance;
-    }
-
-    public void printMatrix(int[][] matrix) {
-        for (int i = 0; i < matrix.length; i++) {
-            for (int j = 0; j < matrix[i].length; j++) {
-                System.out.print(matrix[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-
-
-
 
     public void performEvaluation() {
         //evaluate all solutions
@@ -199,9 +126,7 @@ public class Population {
         this.maxFitness = Double.MIN_VALUE;
         this.avgFitness = 0;
         this.maxNumTrains = Integer.MIN_VALUE;
-        //System.out.println(Config.TILE_PRICING_SF+" tile pricing scale factor");
         for (int i = 0; i < pSize; i++) {
-            //double f = solutions.get(i).rateFitness();
             Railroad r = solutions.get(i);
             double f = r.rateFitnessWithPricing();
             this.totalFitness += f;
@@ -217,9 +142,9 @@ public class Population {
         //System.out.println("Thread " + Thread.currentThread().getName() + " evaluating solutions from " + start + " to " + (end));
         //evaluate all solutions
         for (int i = start; i < end; i++) {
-            double f = solutions.get(i).rateFitness();
-            //System.out.println(solutions.get(161) +"manjaaaa");
-            //updateStatistics(f);
+            double f = solutions.get(i).rateFitnessWithPricing();
+           // double f = solutions.get(i).rateFitness();
+
         }
     }
 
@@ -233,7 +158,7 @@ public class Population {
                 Railroad r = solutions.get(i);
                 r.rateFitness();
                 mySolutions.add(r);
-            }//System.out.println("i am process "+rank+"amd i evaluated index "+i);
+            }
         }
         return mySolutions;
     }
@@ -252,7 +177,7 @@ public class Population {
             }
         }
     }
-    //collect statistics?????
+    //collect statistics
 
     public void resetStatistics() {
         this.totalFitness = 0.0;
@@ -280,9 +205,6 @@ public class Population {
                 }
             }
         }
-        // index = r.nextInt(pSize);
-
-        //System.out.println("Selected individual at index "+index);
         Railroad selected = solutions.get(index);
         Railroad r = new Railroad(selected.trains, -1);
         r.setWorld(selected.world);
@@ -338,69 +260,40 @@ public class Population {
     }
 
 
-//    public void mutate(int mutationType, Railroad r){
-//        switch (mutationType) {
-//            case Config.INSERTION_MUTATION:
-//                r.insertionMutation();
-//                break;
-//            case Config.OTHER_MUTATION:
-//                break;
-//            default:
-//                System.out.println("invalid mutation type");
-//        }
-//    }
-
-//    public void sortPopulation(){
-//        //used for truncation selection
-//        tsIndex = this.solutions.size(); //reset counter
-//        Collections.sort(this.solutions); //sort
-//    }
-
     public List<Railroad> buildPopulation(int start, int end, List<Railroad> newP) {
         while (start < end) {
+
             Railroad r1 = this.select(Config.ROULETTE_WHEEL_SELECTION);
             Railroad r2 = this.select(Config.ROULETTE_WHEEL_SELECTION);
-            //crossover
+
             if (Math.random() < Config.CROSSOVER_RATE) {
                 GA.crossover(Config.SINGLE_POINT_CROSSOVER, r1, r2);
             }
             GA.mutate(Config.INSERTION_MUTATION, r1);
             GA.mutate(Config.INSERTION_MUTATION, r2);
 
-            //add to new pop
-            //if(p.CURRENT_GENERATION == 10){
-//                    newP.add(Main.generateTrivialSol());
-            r1.id = start;
+            r1.id=start;
             start++;
-            r2.id = start;
-            //add to local pop
+            r2.id=start;
             newP.add(r1);
-            //System.out.println(index);
             newP.add(r2);
             start++;
-            //System.out.println(index);
         }
         // System.out.println("Thread " + Thread.currentThread() + " built solutions of size "+ newP.size());
-
         return newP;
     }
 
-    //returns a railroad with best fitness
-    public Railroad getBestSolutionsLinear() {
-        double bestScore = -100;
-        int index = 0;
-        for (int i = 0; i < pSize; i++) {
-            Railroad r = solutions.get(i);
-            if (r.fitness > bestScore && !r.selected) {
-                bestScore = r.fitness;
-                index = i;
-            }
+    public boolean checkStagnation() {
+        if (maxNumTrains == prevNumTrains) {
+            genWithoutImprovement++;
+        } else {
+            genWithoutImprovement = 0;
+            prevNumTrains = maxNumTrains;
         }
-        Railroad selected = solutions.get(index);
-        selected.selected = true;
-        //System.out.println("best at index "+index+" with fitness "+bestScore);
-        return selected;
+        return genWithoutImprovement > Config.STAGNATION_BOUND;
     }
+
+    //returns a railroad with best fitness
 
     public Railroad getBestSolutions() {
         double bestScore = -100;
@@ -429,7 +322,6 @@ public class Population {
                 index = i;
             }
         }
-        //System.out.println("best at index "+index+" with fitness "+bestScore);
         Railroad r = solutions.get(index);
         return r;
     }

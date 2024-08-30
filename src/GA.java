@@ -9,8 +9,8 @@ public class GA {
     static Random random = new Random(4);
 
     public static void performEvaluation(Population population) {
-        population.performEvaluation();
-        // population.performEvaluationWithPricing();
+        //population.performEvaluation();
+         population.performEvaluationWithPricing();
     }
 
     public static List<Railroad> selectElite(Population population) {
@@ -146,4 +146,25 @@ public class GA {
                 System.out.println("Invalid mutation type");
         }
     }
+
+    public static void adjustMutationRate(Population p) {
+        if (p.checkStagnation() == true) {
+            tweakMutation();
+        } else {
+            restoreMutation();
+        }
+    }
+
+    private static void tweakMutation() {
+        Config.MUTATION_RATE += Config.PEAK_MUTATION;
+        if(Config.MUTATION_RATE>3*Config.DEFAULT_MUTATION){
+            restoreMutation();
+        }
+    }
+
+    private static void restoreMutation() {
+        Config.MUTATION_RATE = Config.DEFAULT_MUTATION;
+    }
+
+
 }

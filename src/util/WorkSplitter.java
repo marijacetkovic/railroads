@@ -4,9 +4,6 @@ public class WorkSplitter {
     public int capacity;
     private final int size;
     public WorkSplitter(int capacity, int size) {
-        if(capacity!=1000){
-            System.out.println("Vasilije turcin");
-        }
         this.capacity = capacity;
         this.size = size;
     }

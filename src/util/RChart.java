@@ -35,7 +35,7 @@ public class RChart {
         File outputFile = new File("railroad_chart.png");
         try {
             ChartUtilities.saveChartAsPNG(outputFile, chart, 800, 600);
-            System.out.println("Chart saved as PDF: " + outputFile.getAbsolutePath());
+           // System.out.println("Chart saved as PDF: " + outputFile.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }

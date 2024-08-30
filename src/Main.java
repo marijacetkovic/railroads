@@ -4,7 +4,6 @@ import util.TileDictionary;
 import util.TrainGenerator;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
@@ -12,7 +11,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
     public static TileDictionary dict = new TileDictionary();
-    static Random r = new Random(Config.RANDOM_SEED);
     public static List<int[]> trains = TrainGenerator.getRandomTrains(Config.NUM_TRAINS);
 
     public static Population p = new Population();

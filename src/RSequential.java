@@ -19,16 +19,22 @@ public class RSequential {
         long startTime = System.currentTimeMillis();
         population.initializeSolutions();
         while (population.getCurrentGeneration() < Config.NUM_GENERATIONS) {
-            GA.performEvaluation(population);
-            List<Railroad> newPopulation = GA.selectElite(population);
-           // population.adjustMutationRate();
-            System.out.println("Mutation rate: " + Config.MUTATION_RATE);
-            GA.buildAndSetNewPopulation(population,newPopulation);
-            GA.updateBestIndividual(population,bestIndividualQueue);
+            runGeneration();
             Population.increaseCurrentGeneration();
         }
         long endTime = System.currentTimeMillis();
         System.out.println("Time taken to perform the algorithm: " + (endTime - startTime) + " ms");
+    }
+
+    public void runGeneration() {
+        population.resetStatistics();
+        GA.performEvaluation(population);
+        GA.adjustMutationRate(population);
+        population.updateAllStatistics();
+        population.printPopulationStatistics();
+        List<Railroad> newPopulation = GA.selectElite(population);
+        GA.buildAndSetNewPopulation(population, newPopulation);
+        GA.updateBestIndividual(population, bestIndividualQueue);
         RChart.saveChart(population.getPData());
     }
 }
