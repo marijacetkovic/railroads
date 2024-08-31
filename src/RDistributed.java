@@ -14,6 +14,20 @@ public class RDistributed {
     private static WorkSplitter wSplitter;
 
     public static void main(String[] args) throws Exception {
+
+        if (args.length < 3) {
+            System.out.println("Usage: java RDistributed <worldSize> <numTrains> <displayGui>");
+            System.exit(1);
+        }
+
+        int worldSize = Integer.parseInt(args[8]);
+        int numTrains = Integer.parseInt(args[9]);
+        boolean displayGui = Boolean.parseBoolean(args[10]);
+
+        Config.WORLD_SIZE = worldSize;
+        Config.NUM_TRAINS = numTrains;
+        Config.RENDER_GUI = displayGui;
+
         MPI.Init(args);
         int rank = MPI.COMM_WORLD.Rank();
         int size = MPI.COMM_WORLD.Size();

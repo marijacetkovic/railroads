@@ -4,11 +4,11 @@ public class Config {
     public static final int NUM_GENERATIONS = 100;
     public static int WORLD_SIZE = 20;
     public static int NUM_TRAINS = 50;
-    public static final int POPULATION_SIZE = 5000;
+    public static final int POPULATION_SIZE = 1000;
     public static final double CROSSOVER_RATE = 0.85;
     public static final int STAGNATION_BOUND = 10;
     public static final double DEFAULT_MUTATION = 0.01;
-    public static double CROSSROAD_NUMBER = 0.25;
+    public static double CROSSROAD_NUMBER = 0.27;
     public static double MUTATION_RATE = 0.01;
     public static final double PEAK_MUTATION = 0.001;
     public final static int ELITISM_K = (int)(0.01*POPULATION_SIZE);

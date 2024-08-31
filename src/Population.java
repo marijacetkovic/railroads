@@ -315,7 +315,7 @@ public class Population {
     }
 
     public Railroad getBestIndividual() {
-        double bestScore = -100;
+        double bestScore = Integer.MIN_VALUE;
         int index = 0;
         for (int i = 0; i < pSize; i++) {
             Railroad r = solutions.get(i);
