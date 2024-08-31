@@ -30,6 +30,7 @@ public class RParallel {
     public void execute() {
         long startTime = System.currentTimeMillis();
         population.initializeSolutions();
+        Main.renderGui(Main.trains,bestIndividualQueue);
         while (Population.getCurrentGeneration() < Config.NUM_GENERATIONS) {
             runGeneration();
             Population.increaseCurrentGeneration();
@@ -42,7 +43,7 @@ public class RParallel {
     private void runGeneration() {
         population.resetStatistics();
         evaluateInParallel();
-        GA.adjustMutationRate(population);
+        //GA.adjustMutationRate(population);
         GA.updatePopulationData(population);
         List<Railroad> newPopulation = GA.selectElite(population);
         buildInParallel(newPopulation);

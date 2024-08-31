@@ -36,11 +36,16 @@ public class GA {
         bestIndividual.generation = Population.getCurrentGeneration();
         bestIndividualQueue.add(bestIndividual);
         population.updateBestSolution(bestIndividual);
-        System.out.println("Best solution ID: " + bestIndividual.id +
-                " with fitness: " + bestIndividual.fitness +
-                ", number of trains finished: " + bestIndividual.numTrains +
-                ", tile price: " + bestIndividual.tilePricing +
-                " for generation: " + Population.getCurrentGeneration());
+        System.out.println(
+                String.format(
+                        "Best Individual: %d, Generation: %d, Best Fitness: %.2f, Trains Finished: %d, Tile Pricing: %.2f",
+                        bestIndividual.id,
+                        Population.getCurrentGeneration(),
+                        bestIndividual.fitness,
+                        bestIndividual.numTrains,
+                        bestIndividual.tilePricing
+                )
+        );
     }
 
     public static void crossover(int crossoverType, Railroad r1, Railroad r2) {
@@ -81,7 +86,7 @@ public class GA {
         int[][] world = railroad.getWorld();
         for (int i = 0; i < world.length; i++) {
             for (int j = 0; j < world[i].length; j++) {
-                if (Math.random() < Config.MUTATION_RATE) {
+                if (random.nextDouble(1) < Config.MUTATION_RATE) {
                     int tileKey = random.nextInt(11) + 1;
                     railroad.setTile(i, j, tileKey);
                 }

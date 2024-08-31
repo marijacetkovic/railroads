@@ -18,6 +18,7 @@ public class RSequential {
     public void execute() {
         long startTime = System.currentTimeMillis();
         population.initializeSolutions();
+        Main.renderGui(Main.trains,bestIndividualQueue);
         while (population.getCurrentGeneration() < Config.NUM_GENERATIONS) {
             runGeneration();
             Population.increaseCurrentGeneration();
@@ -30,11 +31,10 @@ public class RSequential {
         population.resetStatistics();
         GA.performEvaluation(population);
         GA.adjustMutationRate(population);
-        population.updateAllStatistics();
-        population.printPopulationStatistics();
+        GA.updatePopulationData(population);
         List<Railroad> newPopulation = GA.selectElite(population);
         GA.buildAndSetNewPopulation(population, newPopulation);
         GA.updateBestIndividual(population, bestIndividualQueue);
-        RChart.saveChart(population.getPData());
+        //RChart.saveChart(population.getPData());
     }
 }

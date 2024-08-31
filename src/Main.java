@@ -1,41 +1,47 @@
-import org.jfree.chart.block.Block;
 import util.Config;
 import util.TileDictionary;
-import util.TrainGenerator;
 
 import javax.swing.*;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Main {
     public static TileDictionary dict = new TileDictionary();
-    public static List<int[]> trains = TrainGenerator.getRandomTrains(Config.NUM_TRAINS);
+    public static List<int[]> trains;
 
     public static Population p;
 
     static Railroad bestIndividual;
     private static BlockingQueue<Railroad> bestIndividualQueue;
-    private static int mode;
 
     public static void main(String[] args) {
-        p=new Population();
-        bestIndividualQueue=new LinkedBlockingQueue<>();
-        System.out.println(args);
-        if(args.length<1){
-            System.out.println("Please enter preferred mode as argument.");
-            System.out.println("Sequential mode - 1");
-            System.out.println("Parallel mode - 2");
+        initProgram(args);
+    }
+
+    private static void initProgram(String[] args){
+
+        if (args.length < 3) {
+            System.out.println("Usage: java Main <modeOfExecution> <worldSize> <numTrains> <displayGui>");
+            System.exit(1);
         }
-        else{
-            mode = Integer.parseInt(args[0]);
-        }
-        renderGui(trains, bestIndividualQueue);
-        runGeneticAlgorithm(2);
+
+        int mode = Integer.parseInt(args[0]);
+        int worldSize = Integer.parseInt(args[1]);
+        int numTrains = Integer.parseInt(args[2]);
+        boolean displayGui = Boolean.parseBoolean(args[3]);
+
+        Config.WORLD_SIZE = worldSize;
+        Config.NUM_TRAINS = numTrains;
+        Config.RENDER_GUI = displayGui;
+        runGeneticAlgorithm(mode);
+
     }
 
     public static void runGeneticAlgorithm(int mode){
+        p=new Population();
+        bestIndividualQueue=new LinkedBlockingQueue<>();
+        trains = TrainGenerator.getRandomTrains(Config.NUM_TRAINS);
         if (mode==1){
             new RSequential(p,bestIndividual,bestIndividualQueue).execute();
         }

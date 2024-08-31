@@ -123,20 +123,20 @@ public class Population {
 
     public void performEvaluationWithPricing() {
         //evaluate all solutions
-        this.totalFitness = 0.0;
+        //this.totalFitness = 0.0;
         this.maxFitness = Double.MIN_VALUE;
         this.avgFitness = 0;
-        this.maxNumTrains = Integer.MIN_VALUE;
+        //this.maxNumTrains = Integer.MIN_VALUE;
         for (int i = 0; i < pSize; i++) {
             Railroad r = solutions.get(i);
             double f = r.rateFitnessWithPricing();
-            this.totalFitness += f;
-            this.maxFitness = Math.max(maxFitness, f);
-            this.maxNumTrains = Math.max(maxNumTrains, r.getNumTrains());
+            //this.totalFitness += f;
+            //this.maxFitness = Math.max(maxFitness, f);
+            //this.maxNumTrains = Math.max(maxNumTrains, r.getNumTrains());
         }
-        this.avgFitness = totalFitness / pSize;
-        printPopulationStatistics();
-        savePopulationStatistics();
+//        this.avgFitness = totalFitness / pSize;
+//        printPopulationStatistics();
+//        savePopulationStatistics();
     }
 
     public void performEvaluationP(int start, int end) {
@@ -186,14 +186,17 @@ public class Population {
 
     public void printPopulationStatistics() {
         this.avgFitness = totalFitness / pSize;
-        System.out.println("Total fitness: " + totalFitness + "   |   Max fitness: " + maxFitness + "   |   Avg fitness: " + avgFitness);
+        System.out.println("Generation: " + getCurrentGeneration() + "," +
+                " Best Fitness: " + maxFitness +
+                ", Total Fitness: " + totalFitness +
+                ", Average Fitness: " + avgFitness);
     }
 
     public Railroad rouletteWheelSelection() {
         //probabilistically chooses
         //the ones w greater fitness are more probable, but might also choose w lower fitness
         //keeps population diverse
-        double rand = Math.random() * this.totalFitness; //rnd nr between 0 and total fitness of the population
+        double rand = GA.random.nextDouble(1) * this.totalFitness; //rnd nr between 0 and total fitness of the population
         int index = 0;
         for (int i = 0; i < pSize; i++) {
             if(solutions.get(i)!=null) {
@@ -265,7 +268,7 @@ public class Population {
             Railroad r1 = this.select(Config.ROULETTE_WHEEL_SELECTION);
             Railroad r2 = this.select(Config.ROULETTE_WHEEL_SELECTION);
 
-            if (Math.random() < Config.CROSSOVER_RATE) {
+            if (GA.random.nextDouble(1) < Config.CROSSOVER_RATE) {
                 GA.crossover(Config.SINGLE_POINT_CROSSOVER, r1, r2);
             }
             GA.mutate(Config.INSERTION_MUTATION, r1);
@@ -295,7 +298,7 @@ public class Population {
     //returns a railroad with best fitness
 
     public Railroad getBestSolutions() {
-        double bestScore = -100;
+        double bestScore = Integer.MIN_VALUE;
         int index = 0;
         for (int i = 0; i < pSize; i++) {
             Railroad r = solutions.get(i);
