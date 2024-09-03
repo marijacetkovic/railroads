@@ -34,3 +34,6 @@ The project offers three different implementation modes to execute the Genetic A
 ## User Interaction
 
 A graphical user interface (GUI) is implemented to visualize the railroad network and the progress of the Genetic Algorithm. The GUI can be optionally displayed during the algorithm's execution, providing feedback on the optimization process.
+
+## Testing
+For detailed testing results please refer to the accompanying PDF paper available in the repository.
