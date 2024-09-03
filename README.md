@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project demonstrates the application of a Genetic Algorithm (GA) to solve a railroad network optimization problem. The goal is to design a train network on a 2D grid that allows trains to travel from their starting points to their destinations as efficiently as possible. The network is composed of various tile types, including straight junctions, turn junctions, and crossroads (with their tile costs), which can be configured to optimize the paths.
+This project demonstrates the application of a Genetic Algorithm (GA) to solve a railroad network optimization problem. The goal is to design a train network on a 2D grid that allows trains to travel from their starting points to their destinations as efficiently as possible. The network is composed of various tile types, including straight junctions, turn junctions, and crossroads (with their tile costs), which can be configured to optimize the paths. It was developed as part of the *Programming III - Concurrent Programming* course 23/24 at Faculty of Mathematics, Natural Sciences and Information Technologies, Koper, Slovenia.
 
 ## Project Description
 
